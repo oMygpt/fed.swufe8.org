@@ -1,6 +1,32 @@
 import streamlit as st
 import pandas as pd
 from modules.quality import assess_qa, assess_exercises
+from pathlib import Path
+
+def load_custom_css():
+    css_path = Path("assets/style.css")
+    if css_path.exists():
+        st.markdown(f"<style>{css_path.read_text(encoding='utf-8')}</style>", unsafe_allow_html=True)
+
+def render_card(title: str, content: str = "", key: str = None):
+    st.markdown(f"""
+    <div class="css-card">
+        <h3>{title}</h3>
+        <div>{content}</div>
+    </div>
+    """, unsafe_allow_html=True)
+
+def render_metric_card(label: str, value: str | int | float, delta: str | None = None, col=None):
+    container = col if col else st
+    delta_html = f"<div class='css-metric-delta' style='color: {'#10b981' if delta and not delta.startswith('-') else '#ef4444'}'>{delta}</div>" if delta else ""
+    container.markdown(f"""
+    <div class="css-metric-card">
+        <div class="css-metric-label">{label}</div>
+        <div class="css-metric-value">{value}</div>
+        {delta_html}
+    </div>
+    """, unsafe_allow_html=True)
+
 
 
 def render_overview(meta: dict, warnings: list[str]):
@@ -181,20 +207,7 @@ def render_login_branding(title: str, subtitle: str | None = None):
     )
 
 def style_sidebar_menu():
-    st.sidebar.markdown(
-        """
-        <style>
-        [data-testid="stSidebar"]{background:#FFFFFF;border-right:1px solid #E5E7EB}
-        .sidebar-brand{padding:12px 10px;margin:0 0 10px 0;border-radius:12px;background:#FFFFFF;border:1px solid #E5E7EB;color:#0F172A}
-        .sidebar-brand h2{margin:0;font-size:16px;letter-spacing:.3px}
-        .sidebar-brand .brand-byline{margin-top:4px;color:#64748B;font-size:12px}
-        .sidebar-brand p{margin:6px 0 0 0;color:#64748B;font-size:12px}
-        [role="radiogroup"] {gap:8px}
-        [role="radiogroup"] label{display:block;border:1px solid #E5E7EB;border-radius:12px;padding:10px 12px;margin:6px 0;background:#FFFFFF;transition:all .15s ease;box-shadow:none}
-        [role="radiogroup"] label:hover{border-color:#2563EB;background:#F5F8FF}
-        [role="radiogroup"] label:focus-within{outline:none;border-color:#2563EB;box-shadow:0 0 0 2px rgba(37,99,235,.15)}
-        [role="radiogroup"] label span{font-size:14px;color:#0F172A}
-        </style>
-        """,
-        unsafe_allow_html=True,
-    )
+    # The CSS is now largely handled by assets/style.css, but we can inject specific overrides if needed here.
+    # For now, we rely on the global CSS.
+    pass
+

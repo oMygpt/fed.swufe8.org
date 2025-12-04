@@ -54,9 +54,10 @@ def _suggestions_for_errors(errs: dict, dtype: str) -> list[str]:
     if not tips:
         tips.append("修复所有标红项（Error），并重新上传")
     return tips
-from modules.ui import render_overview, render_tabs, render_history, hide_deploy_button, render_login_branding, style_sidebar_menu
+from modules.ui import render_overview, render_tabs, render_history, hide_deploy_button, render_login_branding, style_sidebar_menu, load_custom_css, render_metric_card
 
 st.set_page_config(page_title="应用经济学语料提交平台 By A³ T @2025", layout="wide", menu_items={"Get help": None, "Report a bug": None, "About": None})
+load_custom_css()
 hide_deploy_button()
 render_login_branding("应用经济学语料提交平台", "By A³ T @2025")
 
@@ -152,14 +153,13 @@ else:
         ex_ug_t = int(tgt.get("levels", {}).get("ug", {}).get("ex", 0))
         ex_grad_t = int(tgt.get("levels", {}).get("grad", {}).get("ex", 0))
         c1, c2, c3, c4 = st.columns(4)
-        with c1: st.metric("问答对数量", qa_count)
-        with c2: st.metric("问答对目标", qa_t)
-        with c3: st.metric("习题数量", ex_count)
-        with c4: st.metric("习题目标", ex_t)
+        render_metric_card("问答对数量", qa_count, f"目标: {qa_t}", col=c1)
+        render_metric_card("习题数量", ex_count, f"目标: {ex_t}", col=c2)
+        render_metric_card("本科习题", f"{ex_ug_count}/{ex_ug_t}", None, col=c3)
+        render_metric_card("研究生习题", f"{ex_grad_count}/{ex_grad_t}", None, col=c4)
+        
+        st.caption("完成进度")
         st.progress(0 if qa_t == 0 else min(1.0, qa_count/qa_t))
-        c5, c6 = st.columns(2)
-        with c5: st.metric("本科习题", f"{ex_ug_count}/{ex_ug_t}")
-        with c6: st.metric("研究生习题", f"{ex_grad_count}/{ex_grad_t}")
         st.progress(0 if ex_ug_t == 0 else min(1.0, ex_ug_count/ex_ug_t))
         st.progress(0 if ex_grad_t == 0 else min(1.0, ex_grad_count/ex_grad_t))
         info = st.session_state.get("last_import_info")
@@ -252,17 +252,14 @@ else:
         ex_ug_t = int(tgt.get("levels", {}).get("ug", {}).get("ex", 0))
         ex_grad_t = int(tgt.get("levels", {}).get("grad", {}).get("ex", 0))
         c1, c2, c3, c4 = st.columns(4)
-        with c1: st.metric("问答对数量", qa_count)
-        with c2: st.metric("问答对目标", qa_t)
-        with c3: st.metric("习题数量", ex_count)
-        with c4: st.metric("习题目标", ex_t)
+        render_metric_card("问答对数量", qa_count, f"目标: {qa_t}", col=c1)
+        render_metric_card("习题数量", ex_count, f"目标: {ex_t}", col=c2)
+        render_metric_card("本科习题", f"{ex_ug_count}/{ex_ug_t}", None, col=c3)
+        render_metric_card("研究生习题", f"{ex_grad_count}/{ex_grad_t}", None, col=c4)
+
+        st.caption("完成进度")
         st.progress(0 if qa_t == 0 else min(1.0, qa_count/qa_t))
         st.progress(0 if ex_t == 0 else min(1.0, ex_count/ex_t))
-        c5, c6 = st.columns(2)
-        with c5: st.metric("本科习题", f"{ex_ug_count}/{ex_ug_t}")
-        with c6: st.metric("研究生习题", f"{ex_grad_count}/{ex_grad_t}")
-        st.progress(0 if ex_ug_t == 0 else min(1.0, ex_ug_count/ex_ug_t))
-        st.progress(0 if ex_grad_t == 0 else min(1.0, ex_grad_count/ex_grad_t))
         records = list_history(user_info["college"]) 
         if not records:
             st.info("暂无语料数据")

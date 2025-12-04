@@ -1,8 +1,9 @@
 <!doctype html>
 <html lang="zh-CN">
+
 <head>
-  <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>学院用户使用手册</title>
   <style>
     :root {
@@ -13,134 +14,196 @@
       --border: #E5E7EB;
       --code-bg: #F8FAFC;
     }
-    html, body { background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, "PingFang SC", "Noto Sans CJK", "Microsoft YaHei", sans-serif; }
-    .container { max-width: 900px; margin: 0 auto; padding: 24px; }
-    h1 { font-size: 28px; margin: 0 0 16px; }
-    h2 { font-size: 22px; margin: 24px 0 12px; border-bottom: 1px solid var(--border); padding-bottom: 4px; }
-    h3 { font-size: 18px; margin: 18px 0 8px; }
-    p { line-height: 1.7; margin: 10px 0; }
-    ul { margin: 8px 0 16px 20px; }
-    li { margin: 6px 0; }
-    code { background: var(--code-bg); border: 1px solid var(--border); border-radius: 4px; padding: 2px 4px; }
-    .note { color: var(--muted); }
-    .section { margin-bottom: 24px; }
-    .kbd { font-family: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; background: var(--code-bg); border: 1px solid var(--border); border-radius: 4px; padding: 2px 6px; }
-    .footer { margin-top: 32px; font-size: 13px; color: var(--muted); border-top: 1px solid var(--border); padding-top: 12px; }
+
+    html,
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, "PingFang SC", "Noto Sans CJK", "Microsoft YaHei", sans-serif;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 24px;
+    }
+
+    h1 {
+      font-size: 28px;
+      margin: 0 0 16px;
+    }
+
+    h2 {
+      font-size: 22px;
+      margin: 24px 0 12px;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 4px;
+    }
+
+    h3 {
+      font-size: 18px;
+      margin: 18px 0 8px;
+    }
+
+    p {
+      line-height: 1.7;
+      margin: 10px 0;
+    }
+
+    ul {
+      margin: 8px 0 16px 20px;
+    }
+
+    li {
+      margin: 6px 0;
+    }
+
+    code {
+      background: var(--code-bg);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 2px 4px;
+    }
+
+    .note {
+      color: var(--muted);
+    }
+
+    .section {
+      margin-bottom: 24px;
+    }
+
+    .kbd {
+      font-family: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      background: var(--code-bg);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 2px 6px;
+    }
+
+    .footer {
+      margin-top: 32px;
+      font-size: 13px;
+      color: var(--muted);
+      border-top: 1px solid var(--border);
+      padding-top: 12px;
+    }
   </style>
 </head>
+
 <body>
-<main class="container">
-  <h1>学院用户使用手册（当前功能版）</h1>
-  <p class="note">本手册面向学院用户，介绍登录、上传与解析预览、历史记录查看、常见问题与自检清单等操作。</p>
+  <main class="container">
+    <h1>学院用户使用手册（当前功能版）</h1>
+    <p class="note">本手册面向学院用户，介绍登录、上传与解析预览、历史记录查看、常见问题与自检清单等操作。</p>
 
-  <div class="section">
-    <h2>界面与角色</h2>
-    <ul>
-      <li>学院用户左侧菜单包含：<span class="kbd">上传数据</span>、<span class="kbd">历史记录</span></li>
-      <li>管理员左侧菜单包含：<span class="kbd">汇总统计</span>、<span class="kbd">学院管理</span>、<span class="kbd">测试样例</span>、<span class="kbd">汇总输出</span>（学院用户无需使用）</li>
-    </ul>
-  </div>
+    <div class="section">
+      <h2>界面与角色</h2>
+      <ul>
+        <li>学院用户左侧菜单包含：<span class="kbd">上传数据</span>、<span class="kbd">历史记录</span></li>
+      </ul>
+    </div>
 
-  <div class="section">
-    <h2>登录、退出与切换账号</h2>
-    <p>各学院账号密码由本科教务联络员单独发放。</p>
-  </div>
+    <div class="section">
+      <h2>登录、退出与切换账号</h2>
+      <p>各学院账号密码由本科教务联络员单独发放。</p>
+    </div>
 
-  <div class="section">
-    <h2>上传数据（问答对 / 习题库）</h2>
-    <ol>
-      <li>菜单选择“上传数据”</li>
-      <li>在“下载模板”页签下载模板并按列填充：
-        <ul>
-          <li>问答对模板：必含 <code>question</code>、<code>answer</code></li>
-          <li>习题库模板：<code>stem</code>、<code>answer</code>；<span class="note">推荐：</span><code>type</code>、<code>options</code>（选择题）、<code>knowledge</code>、<code>analysis</code></li>
-        </ul>
-      </li>
-      <li>在“文件上传与解析”页签选择类型与题型（或“自动识别”），上传 <code>xlsx/xls/csv</code> 文件</li>
-      <li>解析成功后显示概览与预览；解析结果自动保存为 CSV（按中文学院名与日期归档）</li>
-    </ol>
-  </div>
+    <div class="section">
+      <h2>上传数据（问答对 / 习题库）</h2>
+      <ol>
+        <li>菜单选择“上传数据”</li>
+        <li>在“下载模板”页签下载模板并按列填充：
+          <ul>
+            <li>问答对模板：必含 <code>question</code>、<code>answer</code></li>
+          </ul>
+        </li>
+        <li>在“文件上传与解析”页签选择类型与题型（或“自动识别”），上传 <code>xlsx/xls/csv</code> 文件</li>
+        <li>解析成功后显示概览与预览；解析结果自动保存为 CSV（按中文学院名与日期归档）</li>
+      </ol>
+    </div>
 
-  <div class="section">
-    <h2>解析预览与差异化抽检</h2>
-    <ul>
-      <li>随机抽检（20）：随机展示最多 20 条数据</li>
-      <li>顺序浏览：分页浏览、关键词搜索；输入“答案为空”快速定位空答案</li>
-      <li>类型抽检：按题型进行专属校验与统计
-        <ul>
-          <li>问答对：总条目数、答案为空数量、问题长度分布</li>
-          <li>判断题：答案分布柱状图（观察是否均衡）</li>
-          <li>选择题：校验选项完整性与答案一致比例（<code>options</code> 行格式：<code>A: 选项A</code>、<code>B: 选项B</code>…；<code>answer</code> 为选项字母）</li>
-          <li>填空题：答案非空比例</li>
-          <li>简答/论述/案例分析：<code>analysis</code> 解析非空比例</li>
-        </ul>
-      </li>
-    </ul>
-  </div>
+    <div class="section">
+      <h2>解析预览与差异化抽检</h2>
+      <ul>
+        <li>随机抽检（20）：随机展示最多 20 条数据</li>
+        <li>顺序浏览：分页浏览、关键词搜索；输入“答案为空”快速定位空答案</li>
+        <li>类型抽检：按题型进行专属校验与统计
+          <ul>
+            <li>问答对：总条目数、答案为空数量、问题长度分布</li>
+            <li>判断题：答案分布柱状图（观察是否均衡）</li>
+            <li>选择题：校验选项完整性与答案一致比例（<code>options</code> 行格式：<code>A: 选项A</code>、<code>B: 选项B</code>…；<code>answer</code>
+              为选项字母）</li>
+            <li>填空题：答案非空比例</li>
+            <li>简答/论述/案例分析：<code>analysis</code> 解析非空比例</li>
+          </ul>
+        </li>
+      </ul>
+    </div>
 
-  <div class="section">
-    <h2>历史记录查看</h2>
-    <ul>
-      <li>菜单选择“历史记录”，按日期列出上传记录</li>
-      <li>点击每条记录可展开预览与类型抽检</li>
-      <li>如需删除或更改，请联系管理员</li>
-    </ul>
-  </div>
+    <div class="section">
+      <h2>历史记录查看</h2>
+      <ul>
+        <li>菜单选择“历史记录”，按日期列出上传记录</li>
+        <li>点击每条记录可展开预览与类型抽检</li>
+        <li>如需删除或更改，请联系管理员</li>
+      </ul>
+    </div>
 
-  <div class="section">
-    <h2>模板与字段规范</h2>
-    <h3>问答对</h3>
-    <ul>
-      <li>必需：<code>question</code>、<code>answer</code></li>
-      <li>建议：问题明确、答案非空；避免冗余或含敏感信息</li>
-    </ul>
-    <h3>习题库</h3>
-    <ul>
-      <li>必需：<code>stem</code>、<code>answer</code></li>
-      <li>推荐：<code>options</code>（选择题）、<code>knowledge</code>、<code>analysis</code></li>
-      <li>选择题 <code>options</code>：多行文本，每行 <code>字母 + 冒号 + 空格 + 内容</code>；<code>answer</code> 取选项字母</li>
-    </ul>
-  </div>
+    <div class="section">
+      <h2>模板与字段规范</h2>
+      <h3>问答对</h3>
+      <ul>
+        <li>必需：<code>question</code>、<code>answer</code></li>
+        <li>建议：问题明确、答案非空；避免冗余或含敏感信息</li>
+      </ul>
+      <h3>习题库</h3>
+      <ul>
+        <li>必需：<code>stem</code>、<code>answer</code></li>
+        <li>推荐：<code>options</code>（选择题）、<code>knowledge</code>、<code>analysis</code></li>
+        <li>选择题 <code>options</code>：多行文本，每行 <code>字母 + 冒号 + 空格 + 内容</code>；<code>answer</code> 取选项字母</li>
+      </ul>
+    </div>
 
-  <div class="section">
-    <h2>常见问题与自检清单</h2>
-    <ul>
-      <li>未识别到有效数据：检查文件类型及必需列是否存在</li>
-      <li>选择题一致性低：检查 <code>options</code> 行格式与 <code>answer</code> 合法性</li>
-      <li>Excel 多 Sheet 未识别：检查目标 Sheet 是否包含必需列</li>
-      <li>编码乱码：CSV 建议使用 UTF-8</li>
-    </ul>
-  </div>
+    <div class="section">
+      <h2>常见问题与自检清单</h2>
+      <ul>
+        <li>未识别到有效数据：检查文件类型及必需列是否存在</li>
+        <li>选择题一致性低：检查 <code>options</code> 行格式与 <code>answer</code> 合法性</li>
+        <li>Excel 多 Sheet 未识别：检查目标 Sheet 是否包含必需列</li>
+        <li>编码乱码：CSV 建议使用 UTF-8</li>
+      </ul>
+    </div>
 
-  <div class="section">
-    <h2>如何查看目标与达标</h2>
-    <ul>
-      <li>目标设置与达标状态由管理员在“学院管理”维护与查看</li>
-      <li>与管理员确认：问答对与习题总目标、各题型目标、当前达标状态与剩余量</li>
-      <li>自助估算：在“历史记录”中累计问答对与习题条目数；在“类型抽检”查看各题型分布</li>
-      <li>如需只读“进度看板”，可联系管理员开启共享视图</li>
-    </ul>
-  </div>
+    <div class="section">
+      <h2>如何查看目标与达标</h2>
+      <ul>
+        <li>目标设置与达标状态由管理员在“学院管理”维护与查看</li>
+        <li>与管理员确认：问答对与习题总目标、各题型目标、当前达标状态与剩余量</li>
+        <li>自助估算：在“历史记录”中累计问答对与习题条目数；在“类型抽检”查看各题型分布</li>
+        <li>如需只读“进度看板”，可联系管理员开启共享视图</li>
+      </ul>
+    </div>
 
-  <div class="section">
-    <h2>数据隐私与安全</h2>
-    <ul>
-      <li>建议不含个人敏感信息；如需提交，请先脱敏</li>
-      <li>界面默认白色主题；如需调整主题，请联系管理员</li>
-    </ul>
-  </div>
+    <div class="section">
+      <h2>数据隐私与安全</h2>
+      <ul>
+        <li>建议不含个人敏感信息；如需提交，请先脱敏</li>
+        <li>界面默认白色主题；如需调整主题，请联系管理员</li>
+      </ul>
+    </div>
 
-  <div class="section">
-    <h2>联系与支持</h2>
-    <ul>
-      <li>问题报告：记录上传文件名、类型、错误提示，并附“类型抽检”截图发送管理员</li>
-      <li>常见修复：统一模板列名、修正选择题格式、清理空答案、转换为 UTF-8</li>
-    </ul>
-  </div>
+    <div class="section">
+      <h2>联系与支持</h2>
+      <ul>
+        <li>问题报告：记录上传文件名、类型、错误提示，并附“类型抽检”截图发送管理员</li>
+        <li>常见修复：统一模板列名、修正选择题格式、清理空答案、转换为 UTF-8</li>
+      </ul>
+    </div>
 
-  <div class="footer">
-    本科语料联络员联系：<a href="mailto:alone@swufe.edu.cn">alone@swufe.edu.cn</a>
-  </div>
-</main>
+    <div class="footer">
+      本科语料联络员联系：<a href="mailto:alone@swufe.edu.cn">alone@swufe.edu.cn</a>
+    </div>
+  </main>
 </body>
+
 </html>

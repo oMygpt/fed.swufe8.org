@@ -1,0 +1,171 @@
+/* Global Font & Reset */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+html, body, [class*="css"] {
+    font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+}
+
+/* Color Variables */
+:root {
+    --primary-color: #6366f1; /* Indigo 500 */
+    --primary-hover: #4f46e5; /* Indigo 600 */
+    --secondary-color: #64748b; /* Slate 500 */
+    --bg-color: #f8fafc; /* Slate 50 */
+    --card-bg: #ffffff;
+    --text-main: #0f172a; /* Slate 900 */
+    --text-muted: #64748b;
+    --success: #10b981;
+    --warning: #f59e0b;
+    --error: #ef4444;
+}
+
+/* Main Background */
+.stApp {
+    background-color: var(--bg-color);
+}
+
+/* Sidebar Styling */
+[data-testid="stSidebar"] {
+    background-color: #ffffff;
+    border-right: 1px solid #e2e8f0;
+}
+
+[data-testid="stSidebar"] .css-17lntkn {
+    padding-top: 2rem;
+}
+
+/* Custom Sidebar Nav Items (Radio Buttons Hack) */
+.stRadio > div[role="radiogroup"] {
+    background-color: transparent;
+}
+
+.stRadio > div[role="radiogroup"] label {
+    background-color: transparent;
+    border: 1px solid transparent;
+    border-radius: 8px;
+    padding: 10px 16px;
+    margin-bottom: 4px;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    color: var(--text-muted);
+    font-weight: 500;
+}
+
+.stRadio > div[role="radiogroup"] label:hover {
+    background-color: #f1f5f9;
+    color: var(--primary-color);
+}
+
+/* Selected State for Radio Buttons */
+.stRadio > div[role="radiogroup"] label[data-baseweb="radio"] > div:first-child {
+    /* Hide the actual radio circle */
+    display: none; 
+}
+
+/* We can't easily target the 'checked' state of the label parent via pure CSS in Streamlit without :has() support in all browsers or specific structure. 
+   However, Streamlit adds specific classes or styles to the selected item. 
+   For now, we rely on the default highlight but cleaner. 
+   Actually, let's style the text. */
+
+/* Card Container */
+.css-card {
+    background-color: var(--card-bg);
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+    margin-bottom: 24px;
+    border: 1px solid #e2e8f0;
+}
+
+/* Metric Card */
+.css-metric-card {
+    background-color: var(--card-bg);
+    border-radius: 10px;
+    padding: 20px;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    text-align: center;
+}
+
+.css-metric-label {
+    font-size: 0.875rem;
+    color: var(--text-muted);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.css-metric-value {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--primary-color);
+    margin: 8px 0;
+}
+
+.css-metric-delta {
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+/* Buttons */
+.stButton > button {
+    border-radius: 8px;
+    font-weight: 600;
+    padding: 0.5rem 1rem;
+    border: none;
+    transition: all 0.2s;
+}
+
+.stButton > button[kind="primary"] {
+    background-color: var(--primary-color);
+    color: white;
+    box-shadow: 0 4px 6px -1px rgba(99, 102, 241, 0.3);
+}
+
+.stButton > button[kind="primary"]:hover {
+    background-color: var(--primary-hover);
+    box-shadow: 0 6px 8px -1px rgba(99, 102, 241, 0.4);
+    transform: translateY(-1px);
+}
+
+.stButton > button[kind="secondary"] {
+    background-color: #ffffff;
+    color: var(--text-main);
+    border: 1px solid #e2e8f0;
+}
+
+.stButton > button[kind="secondary"]:hover {
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+    background-color: #f8fafc;
+}
+
+/* Headers */
+h1, h2, h3 {
+    color: var(--text-main);
+    font-weight: 700;
+}
+
+h1 { letter-spacing: -0.025em; }
+
+/* Dataframes */
+[data-testid="stDataFrame"] {
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+/* Expander */
+.streamlit-expanderHeader {
+    background-color: #ffffff;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+    font-weight: 500;
+}
+
+/* Success/Error/Warning Messages */
+.stAlert {
+    border-radius: 8px;
+    border: none;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+}
