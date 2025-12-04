@@ -85,10 +85,10 @@ elif authentication_status is None:
         _md = _gp.read_text(encoding="utf-8")
         with st.expander("在线查看使用指南"):
             st.markdown(_md)
-    _gh = _P("handbook.html")
-    if _gh.exists():
-        _html = _gh.read_text(encoding="utf-8")
-        components.html(_html, height=800, scrolling=True)
+    # _gh = _P("handbook.html")
+    # if _gh.exists():
+    #     _html = _gh.read_text(encoding="utf-8")
+    #     components.html(_html, height=800, scrolling=True)
 else:
     user_info = get_user_info(username)
     st.sidebar.success(f"当前用户：{user_info['display']}（{user_info['role']}）")
