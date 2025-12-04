@@ -91,16 +91,8 @@ elif authentication_status is None:
     #     components.html(_html, height=800, scrolling=True)
 else:
     user_info = get_user_info(username)
-    st.sidebar.success(f"当前用户：{user_info['display']}（{user_info['role']}）")
-    from pathlib import Path as _P
-    _gp = _P("handbook.md")
-    if _gp.exists():
-        _md = _gp.read_text(encoding="utf-8")
-    _gh = _P("handbook.html")
-    if _gh.exists():
-        _html = _gh.read_text(encoding="utf-8")
-        with st.sidebar.expander("在线阅读指南 (HTML)"):
-            components.html(_html, height=600, scrolling=True)
+    st.sidebar.markdown(f"欢迎 **{user_info['display']}**")
+
     try:
         from modules.storage import log_login
         if not st.session_state.get("login_logged"):
@@ -112,9 +104,9 @@ else:
         authenticator.logout("退出登录", "sidebar")
     except Exception:
         pass
-    if st.sidebar.button("切换账号"):
-        for k in ["authentication_status", "username", "name"]:
-            st.session_state.pop(k, None)
+    # if st.sidebar.button("切换账号"):
+    #     for k in ["authentication_status", "username", "name"]:
+    #         st.session_state.pop(k, None)
     if user_info["role"] == "admin":
         menu = ["📊 汇总统计", "🏫 学院管理", "🧪 测试样例", "📦 汇总输出"]
     else:
@@ -122,6 +114,13 @@ else:
     style_sidebar_menu()
     st.sidebar.markdown("<div class='sidebar-brand'><h2>应用经济学语料提交平台</h2><div class='brand-byline'>By A³ T @2025</div><p>请选择菜单</p></div>", unsafe_allow_html=True)
     choice = st.sidebar.radio("菜单", menu)
+
+    from pathlib import Path as _P
+    _gp = _P("handbook.md")
+    if _gp.exists():
+        _md = _gp.read_text(encoding="utf-8")
+        with st.sidebar.expander("在线阅读指南"):
+            st.markdown(_md)
 
     if choice.endswith("上传数据"):
         st.header("上传数据")
@@ -171,61 +170,74 @@ else:
                 st.success(msg)
             st.session_state.pop("last_import_info", None)
 
+        #st.subheader("上传学院收集的语料集")
         st.subheader("上传学院收集的语料集")
-        upload_type = st.radio("上传类型", ["问答对", "本科习题库", "研究生习题库"], horizontal=True)
-        exercise_types = ["自动识别", "选择题", "填空题", "简答题", "论述题", "案例分析题", "判断题"]
-        level_types = ["自动识别", "本科", "研究生"]
-        chosen_ex_type = None
-        chosen_level = None
-        if upload_type == "本科习题库":
-            # 本科习题库：不显示级别选择，默认本科
-            sel = st.selectbox("题型", exercise_types)
-            chosen_ex_type = None if sel == "自动识别" else sel
-            chosen_level = "本科"
-        elif upload_type == "研究生习题库":
-            # 强制研究生级别，不进行级别自动识别
-            sel = st.selectbox("题型", exercise_types)
-            chosen_ex_type = None if sel == "自动识别" else sel
-            chosen_level = "研究生"
-        nonce = st.session_state.get("upload_nonce", 0)
-        uploaded = st.file_uploader("上传学院收集的语料集（支持 Excel/CSV）", type=["xlsx", "xls", "csv"], key=f"main_upload_{nonce}") 
-        if uploaded is not None:
-            raw_path = archive_raw_file(uploaded, user_info["college"]) 
-            # 本科/研究生习题库均按“习题库”解析，但强制传入 level
-            _u_type = "习题库" if upload_type in ("本科习题库", "研究生习题库") else upload_type
-            meta, df, warnings = parse_uploaded_file(uploaded, _u_type, chosen_ex_type, chosen_level)
-            render_overview(meta, warnings)
-            render_tabs(df, meta, key_prefix="upload_preview")
-            type_mismatch = bool(meta.get("detected_type") and meta.get("type") and meta.get("detected_type") != meta.get("type"))
-            if type_mismatch:
-                st.error("类型选择与系统识别不一致：请检查文件结构或更正上传类型。已禁用入库与强制入库。")
-            else:
-                QUALITY_ERROR_RATIO_THRESHOLD = 0.05
-                qs = (meta.get("quality_summary") or {})
-                err_ratio = float(qs.get("error_row_ratio", 0.0))
-                st.caption(f"质量错误占比：{round(err_ratio*100,2)}%（阈值 {int(QUALITY_ERROR_RATIO_THRESHOLD*100)}%）")
-                c1, c2 = st.columns(2)
-                with c1:
-                    if err_ratio <= QUALITY_ERROR_RATIO_THRESHOLD:
-                        if st.button("入库", type="primary"):
-                            save_parsed_dataset(df, meta, user_info["college"]) 
-                            st.session_state["last_import_info"] = {"type": meta.get('type','-'), "count": len(df), "force": False}
-                            st.session_state["upload_nonce"] = nonce + 1
+        
+        def render_upload_section(upload_type_label: str, user_info: dict, key_suffix: str):
+            exercise_types = ["自动识别", "选择题", "填空题", "简答题", "论述题", "案例分析题", "判断题"]
+            chosen_ex_type = None
+            chosen_level = None
+            
+            if upload_type_label == "本科习题库":
+                sel = st.selectbox("题型", exercise_types, key=f"ex_type_{key_suffix}")
+                chosen_ex_type = None if sel == "自动识别" else sel
+                chosen_level = "本科"
+            elif upload_type_label == "研究生习题库":
+                sel = st.selectbox("题型", exercise_types, key=f"ex_type_{key_suffix}")
+                chosen_ex_type = None if sel == "自动识别" else sel
+                chosen_level = "研究生"
+            
+            nonce = st.session_state.get(f"upload_nonce_{key_suffix}", 0)
+            uploaded = st.file_uploader("上传文件（支持 Excel/CSV）", type=["xlsx", "xls", "csv"], key=f"main_upload_{key_suffix}_{nonce}")
+            
+            if uploaded is not None:
+                raw_path = archive_raw_file(uploaded, user_info["college"])
+                _u_type = "习题库" if upload_type_label in ("本科习题库", "研究生习题库") else upload_type_label
+                meta, df, warnings = parse_uploaded_file(uploaded, _u_type, chosen_ex_type, chosen_level)
+                render_overview(meta, warnings)
+                render_tabs(df, meta, key_prefix=f"upload_preview_{key_suffix}")
+                
+                type_mismatch = bool(meta.get("detected_type") and meta.get("type") and meta.get("detected_type") != meta.get("type"))
+                if type_mismatch:
+                    st.error("类型选择与系统识别不一致：请检查文件结构或更正上传类型。已禁用入库与强制入库。")
+                else:
+                    QUALITY_ERROR_RATIO_THRESHOLD = 0.05
+                    qs = (meta.get("quality_summary") or {})
+                    err_ratio = float(qs.get("error_row_ratio", 0.0))
+                    st.caption(f"质量错误占比：{round(err_ratio*100,2)}%（阈值 {int(QUALITY_ERROR_RATIO_THRESHOLD*100)}%）")
+                    c1, c2 = st.columns(2)
+                    with c1:
+                        if err_ratio <= QUALITY_ERROR_RATIO_THRESHOLD:
+                            if st.button("入库", type="primary", key=f"btn_save_{key_suffix}"):
+                                save_parsed_dataset(df, meta, user_info["college"])
+                                st.session_state["last_import_info"] = {"type": meta.get('type','-'), "count": len(df), "force": False}
+                                st.session_state[f"upload_nonce_{key_suffix}"] = nonce + 1
+                                if hasattr(st, "rerun"):
+                                    st.rerun()
+                                elif hasattr(st, "experimental_rerun"):
+                                    st.experimental_rerun()
+                        else:
+                            st.error(f"质量错误占比 {round(err_ratio*100,2)}% 超过阈值，建议修复后再入库")
+                    with c2:
+                        if st.button("强制入库（忽略质量检测）", key=f"btn_force_{key_suffix}"):
+                            save_parsed_dataset(df, meta, user_info["college"])
+                            st.session_state["last_import_info"] = {"type": meta.get('type','-'), "count": len(df), "force": True}
+                            st.session_state[f"upload_nonce_{key_suffix}"] = nonce + 1
                             if hasattr(st, "rerun"):
                                 st.rerun()
                             elif hasattr(st, "experimental_rerun"):
                                 st.experimental_rerun()
-                    else:
-                        st.error(f"质量错误占比 {round(err_ratio*100,2)}% 超过阈值，建议修复后再入库")
-                with c2:
-                    if st.button("强制入库（忽略质量检测）"):
-                        save_parsed_dataset(df, meta, user_info["college"]) 
-                        st.session_state["last_import_info"] = {"type": meta.get('type','-'), "count": len(df), "force": True}
-                        st.session_state["upload_nonce"] = nonce + 1
-                        if hasattr(st, "rerun"):
-                            st.rerun()
-                        elif hasattr(st, "experimental_rerun"):
-                            st.experimental_rerun()
+
+        tab1, tab2, tab3 = st.tabs(["问答对", "本科习题库", "研究生习题库"])
+        with tab1:
+            st.info("上传问答对数据（必须包含 question 和 answer 列）")
+            render_upload_section("问答对", user_info, "qa")
+        with tab2:
+            st.info("上传本科生习题库数据（必须包含 stem 和 answer 列）")
+            render_upload_section("本科习题库", user_info, "ug")
+        with tab3:
+            st.info("上传研究生习题库数据（必须包含 stem 和 answer 列）")
+            render_upload_section("研究生习题库", user_info, "grad")
 
     elif choice.endswith("语料数据"):
         st.header("语料数据")
