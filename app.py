@@ -119,7 +119,7 @@ else:
     else:
         menu = ["⬆️ 上传数据", "🕘 历史记录"]
     style_sidebar_menu()
-    st.sidebar.markdown("<div class='sidebar-brand'><h2>应用经济学语料提交平台（本科）</h2><p>请选择菜单</p></div>", unsafe_allow_html=True)
+    st.sidebar.markdown("<div class='sidebar-brand'><h2>应用经济学语料提交平台（本科）</h2><p>请选择菜单</p><div class='sidebar-team'>A³ T  @2025</div></div>", unsafe_allow_html=True)
     choice = st.sidebar.radio("菜单", menu)
 
     if choice.endswith("上传数据"):
