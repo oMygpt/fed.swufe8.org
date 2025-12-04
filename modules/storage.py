@@ -36,9 +36,8 @@ def _dirnames_for_college_test(college: str) -> list[Path]:
     return [BASE_TEST / n for n in names]
 
 def _primary_dir_for_college(college: str, is_test: bool = False) -> Path:
-    disp = get_college_display(college)
-    name = _safe_dir(disp) if disp else college
-    return (BASE_TEST if is_test else BASE) / name
+    # 始终以学院代码为主目录，避免中文名变化导致路径分裂
+    return (BASE_TEST if is_test else BASE) / college
 
 def archive_raw_file(uploaded_file, college: str, is_test: bool = False) -> Path:
     root = _primary_dir_for_college(college, is_test)

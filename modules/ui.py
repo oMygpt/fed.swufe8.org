@@ -165,8 +165,7 @@ def render_login_branding(title: str, subtitle: str | None = None):
         .block-container{max-width:900px;padding-top:2rem}
         .login-hero{padding:24px;border-radius:14px;text-align:center;color:#0F172A;background:radial-gradient(circle at 50% 40%, rgba(37,99,235,0.08) 0%, rgba(30,64,175,0.12) 60%, rgba(2,6,23,0.08) 100%);border:1px solid #E5E7EB}
         .login-hero h1{margin:0;font-size:28px;letter-spacing:0.5px}
-        .login-hero p{margin-top:8px;color:#475569}
-        .login-hero .team{margin-top:10px;color:#334155;font-size:12px;letter-spacing:0.4px}
+        .login-hero .byline{margin-top:6px;color:#64748B;font-size:12px;letter-spacing:0.3px}
         [data-testid="stForm"]{background:#FFFFFF;border:1px solid #E5E7EB;border-radius:14px;padding:20px;box-shadow:0 10px 30px rgba(2,6,23,0.06)}
         .stTextInput>div>div>input,.stPasswordInput>div>div>input{border-radius:10px}
         .stButton>button{background:#2563EB;color:#FFFFFF;border-radius:10px;border:0;padding:8px 14px}
@@ -177,7 +176,7 @@ def render_login_branding(title: str, subtitle: str | None = None):
         unsafe_allow_html=True,
     )
     st.markdown(
-        f"<div class='login-hero'><h1>{title}</h1>" + (f"<p>{subtitle}</p>" if subtitle else "") + "<p class='team'>A³ T  @2025</p></div>",
+        f"<div class='login-hero'><h1>{title}</h1>" + (f"<div class='byline'>{subtitle}</div>" if subtitle else "") + "</div>",
         unsafe_allow_html=True,
     )
 
@@ -185,13 +184,16 @@ def style_sidebar_menu():
     st.sidebar.markdown(
         """
         <style>
-        [data-testid="stSidebar"]{background:linear-gradient(180deg,#F8FAFC 0%,#EEF2F7 100%);border-right:1px solid #E5E7EB}
-        .sidebar-brand{padding:12px 10px;margin:0 0 8px 0;border-radius:12px;background:#FFFFFF;border:1px solid #E5E7EB;box-shadow:0 8px 24px rgba(2,6,23,0.04);color:#0F172A}
-        .sidebar-brand h2{margin:0;font-size:16px}
-        .sidebar-brand p{margin:4px 0 0 0;color:#64748B;font-size:12px}
-        .sidebar-team{margin-top:6px;color:#334155;font-size:11px}
-        [role="radiogroup"] label{display:block;border:1px solid #E5E7EB;border-radius:10px;padding:8px 10px;margin-bottom:8px;background:#FFFFFF}
-        [role="radiogroup"] label:hover{border-color:#2563EB;background:#F0F5FF}
+        [data-testid="stSidebar"]{background:#FFFFFF;border-right:1px solid #E5E7EB}
+        .sidebar-brand{padding:12px 10px;margin:0 0 10px 0;border-radius:12px;background:#FFFFFF;border:1px solid #E5E7EB;color:#0F172A}
+        .sidebar-brand h2{margin:0;font-size:16px;letter-spacing:.3px}
+        .sidebar-brand .brand-byline{margin-top:4px;color:#64748B;font-size:12px}
+        .sidebar-brand p{margin:6px 0 0 0;color:#64748B;font-size:12px}
+        [role="radiogroup"] {gap:8px}
+        [role="radiogroup"] label{display:block;border:1px solid #E5E7EB;border-radius:12px;padding:10px 12px;margin:6px 0;background:#FFFFFF;transition:all .15s ease;box-shadow:none}
+        [role="radiogroup"] label:hover{border-color:#2563EB;background:#F5F8FF}
+        [role="radiogroup"] label:focus-within{outline:none;border-color:#2563EB;box-shadow:0 0 0 2px rgba(37,99,235,.15)}
+        [role="radiogroup"] label span{font-size:14px;color:#0F172A}
         </style>
         """,
         unsafe_allow_html=True,

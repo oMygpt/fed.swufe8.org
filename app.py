@@ -56,9 +56,9 @@ def _suggestions_for_errors(errs: dict, dtype: str) -> list[str]:
     return tips
 from modules.ui import render_overview, render_tabs, render_history, hide_deploy_button, render_login_branding, style_sidebar_menu
 
-st.set_page_config(page_title="应用经济学语料提交平台（本科）", layout="wide", menu_items={"Get help": None, "Report a bug": None, "About": None})
+st.set_page_config(page_title="应用经济学语料提交平台 By A³ T @2025", layout="wide", menu_items={"Get help": None, "Report a bug": None, "About": None})
 hide_deploy_button()
-render_login_branding("应用经济学语料提交平台（本科）", "请使用学院账户登录")
+render_login_branding("应用经济学语料提交平台", "By A³ T @2025")
 
 authenticator = get_authenticator()
 authenticator.login(
@@ -117,9 +117,9 @@ else:
     if user_info["role"] == "admin":
         menu = ["📊 汇总统计", "🏫 学院管理", "🧪 测试样例", "📦 汇总输出"]
     else:
-        menu = ["⬆️ 上传数据", "🕘 历史记录"]
+        menu = ["⬆️ 上传数据", "📚 查看语料数据"]
     style_sidebar_menu()
-    st.sidebar.markdown("<div class='sidebar-brand'><h2>应用经济学语料提交平台（本科）</h2><p>请选择菜单</p><div class='sidebar-team'>A³ T  @2025</div></div>", unsafe_allow_html=True)
+    st.sidebar.markdown("<div class='sidebar-brand'><h2>应用经济学语料提交平台</h2><div class='brand-byline'>By A³ T @2025</div><p>请选择菜单</p></div>", unsafe_allow_html=True)
     choice = st.sidebar.radio("菜单", menu)
 
     if choice.endswith("上传数据"):
@@ -136,8 +136,13 @@ else:
                 qa_count += len(dfc)
             else:
                 ex_count += len(dfc)
-                lev = it.get("level") or (dfc.get("level").iloc[0] if "level" in dfc.columns and len(dfc) else "本科")
-                if lev == "研究生":
+                lev_val = None
+                if "level" in dfc.columns and len(dfc):
+                    lev_val = str(dfc["level"].iloc[0])
+                elif "级别" in dfc.columns and len(dfc):
+                    lev_val = str(dfc["级别"].iloc[0])
+                lev_norm = "研究生" if (lev_val and any(k in lev_val for k in ["研", "研究生", "graduate", "硕士", "博士"])) else "本科"
+                if lev_norm == "研究生":
                     ex_grad_count += len(dfc)
                 else:
                     ex_ug_count += len(dfc)
@@ -222,21 +227,30 @@ else:
                         elif hasattr(st, "experimental_rerun"):
                             st.experimental_rerun()
 
-    elif choice.endswith("历史记录"):
-        st.header("历史记录")
+    elif choice.endswith("语料数据"):
+        st.header("语料数据")
         # 进度概览
         items = list_parsed_datasets(user_info["college"]) 
         qa_count = 0
         ex_count = 0
+        ex_ug_count = 0
+        ex_grad_count = 0
         for it in items:
             dfc = load_csv(it["path"])
             if it["type"] == "qa":
                 qa_count += len(dfc)
             else:
                 ex_count += len(dfc)
+                lev = it.get("level") or (dfc.get("level").iloc[0] if "level" in dfc.columns and len(dfc) else "本科")
+                if lev == "研究生":
+                    ex_grad_count += len(dfc)
+                else:
+                    ex_ug_count += len(dfc)
         tgt = get_targets(user_info["college"]) 
         qa_t = int(tgt.get("qa", 0))
         ex_t = int(tgt.get("ex", 0))
+        ex_ug_t = int(tgt.get("levels", {}).get("ug", {}).get("ex", 0))
+        ex_grad_t = int(tgt.get("levels", {}).get("grad", {}).get("ex", 0))
         c1, c2, c3, c4 = st.columns(4)
         with c1: st.metric("问答对数量", qa_count)
         with c2: st.metric("问答对目标", qa_t)
@@ -244,27 +258,38 @@ else:
         with c4: st.metric("习题目标", ex_t)
         st.progress(0 if qa_t == 0 else min(1.0, qa_count/qa_t))
         st.progress(0 if ex_t == 0 else min(1.0, ex_count/ex_t))
+        c5, c6 = st.columns(2)
+        with c5: st.metric("本科习题", f"{ex_ug_count}/{ex_ug_t}")
+        with c6: st.metric("研究生习题", f"{ex_grad_count}/{ex_grad_t}")
+        st.progress(0 if ex_ug_t == 0 else min(1.0, ex_ug_count/ex_ug_t))
+        st.progress(0 if ex_grad_t == 0 else min(1.0, ex_grad_count/ex_grad_t))
         records = list_history(user_info["college"]) 
         if not records:
-            st.info("暂无历史记录")
+            st.info("暂无语料数据")
         else:
             summaries = []
             for it in records:
-                is_qa = it["file"].endswith("_parsed_qa.csv")
-                is_ex = it["file"].endswith("_parsed_ex.csv")
+                name = it["file"]
+                is_qa = name.endswith("_parsed_qa.csv")
+                is_ex = (name.endswith("_parsed_ex.csv") or ("_parsed_ex" in name))
                 if is_qa or is_ex:
                     df_tmp = load_csv(it["path"])
-                    summaries.append({"上传日期": it["date"], "文件": it["file"], "类型": ("问答对" if is_qa else "习题库"), "条目数": len(df_tmp)})
+                    summaries.append({"上传日期": it["date"], "文件": name, "类型": ("问答对" if is_qa else "习题库"), "条目数": len(df_tmp)})
             if summaries:
-                st.subheader("上传记录汇总")
+                st.subheader("语料数据汇总")
                 st.dataframe(pd.DataFrame(summaries), use_container_width=True)
             for item in records:
-                is_parsed_qa = item["file"].endswith("_parsed_qa.csv")
-                is_parsed_ex = item["file"].endswith("_parsed_ex.csv")
-                if is_parsed_qa or is_parsed_ex:
+                name = item["file"]
+                is_parsed_qa = name.endswith("_parsed_qa.csv")
+                is_parsed_ex = (name.endswith("_parsed_ex.csv") or ("_parsed_ex" in name))
+                is_parsed_generic = name.endswith("_parsed.csv")
+                if is_parsed_qa or is_parsed_ex or is_parsed_generic:
                     df = load_csv(item["path"])
-                    type_name = "问答对" if is_parsed_qa else "习题库"
-                    with st.expander(f"{item['date']} - {item['file']} · 类型：{type_name} · 条目：{len(df)}"):
+                    if is_parsed_generic:
+                        type_name = "问答对" if {"question", "answer"}.issubset(set(df.columns)) else "习题库"
+                    else:
+                        type_name = "问答对" if is_parsed_qa else "习题库"
+                    with st.expander(f"{item['date']} - {name} · 类型：{type_name} · 条目：{len(df)}"):
                         meta = {"type": type_name, "filename": item["file"], "total": len(df)}
                         render_overview(meta, [])
                         render_tabs(df, meta, key_prefix=f"history-{item['path']}")
@@ -278,15 +303,16 @@ else:
                             else:
                                 st.error("删除失败")
                 else:
-                    with st.expander(f"{item['date']} - {item['file']} · 原始文件"):
-                        st.info("原始文件（预览略）")
-                        with open(item["path"], "rb") as fh:
-                            st.download_button("下载原始文件", fh.read(), file_name=item["file"]) 
+                    pass
 
     elif choice.endswith("汇总统计"):
         st.header("汇总统计")
         cols = get_colleges()
         name_map = {get_college_display(c): c for c in cols}
+        filtered_items = [(disp, code) for disp, code in name_map.items() if ("演示" not in disp) and (code != "demo")]
+        filtered_items = [(disp, code) for disp, code in name_map.items() if ("演示" not in disp) and (code != "demo")]
+        filtered_items = [(disp, code) for disp, code in name_map.items() if ("演示" not in disp) and (code != "demo")]
+        filtered_items = [(disp, code) for disp, code in name_map.items() if ("演示" not in disp) and (code != "demo")]
         st.subheader("选择学院")
         selected_cols = []
         for disp, code in name_map.items():
@@ -692,25 +718,64 @@ else:
         st.header("汇总输出")
         cols = get_colleges()
         name_map = {get_college_display(c): c for c in cols}
+        filtered_items = [(disp, code) for disp, code in name_map.items() if ("演示" not in disp) and (code != "demo")]
         st.subheader("选择学院")
         select_all = st.checkbox("选择所有学院（去除演示账户）", value=True, key="export-select-all")
         selected_names = []
-        for disp, code in name_map.items():
-            if st.checkbox(disp, value=not select_all, key=f"export-col-{code}"):
-                selected_names.append(disp)
-        fmt = st.radio("格式", ["CSV", "Excel"], horizontal=True, key="export_fmt")
+        if not select_all:
+            for disp, code in filtered_items:
+                if st.checkbox(disp, value=False, key=f"export-col-{code}"):
+                    selected_names.append(disp)
+        else:
+            st.info(f"已自动选择所有学院（已排除演示账户），共 {len(filtered_items)} 个")
         def _to_excel(frames: dict[str, pd.DataFrame]):
             buf = io.BytesIO()
-            with pd.ExcelWriter(buf, engine="xlsxwriter") as writer:
+            with pd.ExcelWriter(buf, engine="openpyxl") as writer:
                 for name, frame in frames.items():
                     frame.to_excel(writer, index=False, sheet_name=name[:31])
             buf.seek(0)
             return buf
+        def _render_download_group(prefix: str, qa_df: pd.DataFrame, ug_df: pd.DataFrame, grad_df: pd.DataFrame):
+            auth_ok = bool(st.session_state.get("authentication_status"))
+            sum_cols = st.columns(3)
+            with sum_cols[0]:
+                st.metric("问答对条目", f"{len(qa_df)}")
+            with sum_cols[1]:
+                st.metric("本科习题条目", f"{len(ug_df)}")
+            with sum_cols[2]:
+                st.metric("研究生习题条目", f"{len(grad_df)}")
+            cols_dl = st.columns(3)
+            if not auth_ok:
+                st.warning("请先登录以下载")
+                return
+            with cols_dl[0]:
+                st.markdown("下载所选择学院的问答对")
+                st.caption("CSV / Excel")
+                st.download_button("下载所选择学院的问答对 (CSV)", qa_df.to_csv(index=False).encode("utf-8"), file_name=f"{prefix}_问答对.csv")
+                qa_buf = _to_excel({"问答对": qa_df})
+                st.download_button("下载所选择学院的问答对 (Excel)", qa_buf.getvalue(), file_name=f"{prefix}_问答对.xlsx")
+            with cols_dl[1]:
+                st.markdown("下载本科习题库")
+                st.caption("CSV / Excel")
+                st.download_button("下载本科习题库 (CSV)", ug_df.to_csv(index=False).encode("utf-8"), file_name=f"{prefix}_本科_习题库.csv")
+                ug_buf = _to_excel({"本科习题库": ug_df})
+                st.download_button("下载本科习题库 (Excel)", ug_buf.getvalue(), file_name=f"{prefix}_本科_习题库.xlsx")
+            with cols_dl[2]:
+                st.markdown("下载研究生习题库")
+                st.caption("CSV / Excel")
+                st.download_button("下载研究生习题库 (CSV)", grad_df.to_csv(index=False).encode("utf-8"), file_name=f"{prefix}_研究生_习题库.csv")
+                grad_buf = _to_excel({"研究生习题库": grad_df})
+                st.download_button("下载研究生习题库 (Excel)", grad_buf.getvalue(), file_name=f"{prefix}_研究生_习题库.xlsx")
         if select_all:
-            selected_codes = [code for disp, code in name_map.items() if ("演示" not in disp) and (code != "demo")]
+            selected_codes = [code for _, code in filtered_items]
         else:
-            selected_codes = [name_map[n] for n in selected_names] if selected_names else cols
-        if len(selected_codes) == 1:
+            selected_codes = [dict(filtered_items)[n] for n in selected_names]
+            if not selected_codes:
+                st.error("请至少选择一个学院")
+                selected_codes = []
+        if not selected_codes:
+            pass
+        elif len(selected_codes) == 1:
             code = selected_codes[0]
             items = list_parsed_datasets(code)
             qa_frames = []
@@ -724,21 +789,13 @@ else:
             qa_df = pd.concat(qa_frames, ignore_index=True) if qa_frames else pd.DataFrame()
             ex_df = pd.concat(ex_frames, ignore_index=True) if ex_frames else pd.DataFrame()
             disp = get_college_display(code)
-            if fmt == "CSV":
-                st.download_button("下载该学院问答对 (CSV)", qa_df.to_csv(index=False).encode("utf-8"), file_name=f"{disp}_qa.csv")
-                st.download_button("下载该学院习题 (CSV)", ex_df.to_csv(index=False).encode("utf-8"), file_name=f"{disp}_exercises.csv")
-                if not ex_df.empty and "level" in ex_df.columns:
-                    grad_df = ex_df[ex_df["level"].astype(str) == "研究生"]
-                    st.download_button("下载该学院研究生习题 (CSV)", grad_df.to_csv(index=False).encode("utf-8"), file_name=f"{disp}_研究生_习题库.csv")
+            if "level" in ex_df.columns:
+                ug_df = ex_df[ex_df["level"].astype(str) == "本科"]
+                grad_df = ex_df[ex_df["level"].astype(str) == "研究生"]
             else:
-                sheets = {"问答对": qa_df}
-                if not ex_df.empty and "type" in ex_df.columns:
-                    for t, part in ex_df.groupby("type"):
-                        sheets[str(t)] = part
-                else:
-                    sheets["习题库"] = ex_df
-                buf = _to_excel(sheets)
-                st.download_button("下载该学院汇总 (Excel)", buf.getvalue(), file_name=f"{disp}_汇总.xlsx")
+                ug_df = pd.DataFrame()
+                grad_df = pd.DataFrame()
+            _render_download_group(disp, qa_df, ug_df, grad_df)
         else:
             all_cols = selected_codes
             qa_frames = []
@@ -755,18 +812,10 @@ else:
                         ex_frames.append(df)
             qa_all = pd.concat(qa_frames, ignore_index=True) if qa_frames else pd.DataFrame()
             ex_all = pd.concat(ex_frames, ignore_index=True) if ex_frames else pd.DataFrame()
-            if fmt == "CSV":
-                st.download_button("下载所有学院问答对 (CSV)", qa_all.to_csv(index=False).encode("utf-8"), file_name="全部_问答对.csv")
-                st.download_button("下载所有学院习题 (CSV)", ex_all.to_csv(index=False).encode("utf-8"), file_name="全部_习题库.csv")
-                if not ex_all.empty and "level" in ex_all.columns:
-                    grad_all = ex_all[ex_all["level"].astype(str) == "研究生"]
-                    st.download_button("下载所有学院研究生习题 (CSV)", grad_all.to_csv(index=False).encode("utf-8"), file_name="全部_研究生_习题库.csv")
+            if "level" in ex_all.columns:
+                ug_all = ex_all[ex_all["level"].astype(str) == "本科"]
+                grad_all = ex_all[ex_all["level"].astype(str) == "研究生"]
             else:
-                sheets = {"问答对": qa_all}
-                if not ex_all.empty and "type" in ex_all.columns:
-                    for t, part in ex_all.groupby("type"):
-                        sheets[str(t)] = part
-                else:
-                    sheets["习题库"] = ex_all
-                buf = _to_excel(sheets)
-                st.download_button("下载所有学院汇总 (Excel)", buf.getvalue(), file_name="全部_汇总.xlsx")
+                ug_all = pd.DataFrame()
+                grad_all = pd.DataFrame()
+            _render_download_group("所选", qa_all, ug_all, grad_all)
