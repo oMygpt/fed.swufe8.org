@@ -1,0 +1,10 @@
+__pycache__/
+.pytest_cache/
+.venv/
+storage/
+exports/
+.git/
+*.pyc
+*.pyo
+*.pyd
+*.swp

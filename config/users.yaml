@@ -1,0 +1,48 @@
+credentials:
+  usernames:
+    economy:
+      email: economy@school
+      name: 经济学院
+      college_code: economy
+      password: "$2b$12$1XtoS3Ci5/sTZw5m.2W4o.fQEQSGgYt/mN/m4x6gSLwME4LvKxrbe"
+    finance:
+      email: finance@school
+      name: 金融学院中国金融研究院
+      college_code: finance
+      password: "$2b$12$xnS65Wv68s0MJmHbbGhPqucC5Nj9mfv0W04KHNlMTVqeAppWwZFkG"
+    intl:
+      email: intl@school
+      name: 国际商学院
+      college_code: intl
+      password: "$2b$12$QtFKxxTP9.fQ/oIrlIKj7O1KuatMQ/1fzgKloubKfMQJ1UWY.cjay"
+    west:
+      email: west@school
+      name: 中国西部经济研究院
+      college_code: west
+      password: "$2b$12$WEvnNeLmiHapkOFeOC.DS.BVRMdlXfkimrhO1/gceHQj0FS6EuNvC"
+    tax:
+      email: tax@school
+      name: 财税学院
+      college_code: tax
+      password: "$2b$12$iOdN9ftqaiEbaN2qdJsEu.uyP6D.tnsf8birAOCnrsQXvx.CdCWXC"
+    mgmt:
+      email: mgmt@school
+      name: 经济与管理研究院
+      college_code: mgmt
+      password: "$2b$12$m7yWf29bGG61jtPTUuZ3BeQdRuWr2qfGbFAXenOeQs2.PRuTzL2PW"
+    demo:
+      email: demo@school
+      name: 演示账户
+      college_code: demo
+      password: "$2b$12$ZKRv3qnuSPdFy6k/irEO1uEM0S/a2UqgHaRyPauvnltMbog3DtFXa"
+    admin:
+      email: admin@school
+      name: 管理员
+      college_code: admin
+      password: "$2b$12$3zF2mzaC3.VRJse/NguoduoPbfIeJZ7vLp4NIhyehcBjU4XXfpAx6"
+cookie:
+  name: auth_cookie
+  key: random_key
+  expiry_days: 1
+preauthorized:
+  emails: []

@@ -1,0 +1,330 @@
+type,stem,options,answer,knowledge,analysis
+选择,Microeconomics is the branch of economics that deals with which of the following topics?,"A) The behavior of individual consumers
+B) Unemployment and interest rates
+C) The behavior of individual firms and investors
+D) B and C
+E) A and C",E,"Definition and scope of microeconomics, Individual decision-making units",
+选择,"A Rolling Stones song goes: ""You can't always get what you want."" This echoes an important theme from microeconomics. Which of the following statements is the best example of this theme?","A) Consumers must make the best purchasing decisions they can, given their limited incomes.
+B) Workers do not have as much leisure as they would like, given their wages and working conditions.
+C) Workers in planned economies, such as North Korea, do not have much choice over jobs.
+D) Firms in market economies have limited financial resources.",A,"Scarcity and trade-offs, Budget constraints",
+选择,Economics is about the allocation of scarce resources. Which of the following is NOT an example of economic scarcity?,"A) If Steve goes to see a movie on Saturday, he will not be able to afford buying ice cream.
+B) If Jenny studies for her economics quiz this evening, she will not have time to walk her dog.
+C) If General Motors increases its production of SUVs this year, it will have to spend more on advertising.
+D) If Barnes and Noble bookstore increases the number of titles it carries, it will have to reallocate shelf space to accommodate the new titles.",C,"Opportunity cost, Identifying true trade-offs",
+选择,A valid and useful theory of gold prices:,"A) helps to predict the movements of gold prices over time.
+B) may be founded on simplifying assumptions.
+C) need not exactly predict every change in gold prices.
+D) all of the above
+E) none of the above",D,"Role of economic theories, Predictive power vs. perfect accuracy",
+选择,"Use the following two statements to answer this question:
+
+I. Economic theories are developed to explain observed phenomena by deducing from a set of basic rules and assumptions.
+
+II. Economic theories use value judgments to determine which people ought to pay more taxes.","A) Both I and II are true.
+B) I is true, and II is false.
+C) I is false, and II is true.
+D) Both I and II are false.",B,"Positive vs. normative analysis, Scientific method in economics",
+选择,Which of the following is a positive statement?,"A) The President of the United States ought to be elected by a direct vote of the American people rather than the Electoral College.
+B) A fundamental assumption of the economic theory of consumer behavior is that consumers always prefer having more of any good to having less of it.
+C) Because many adults cannot afford to go to college, tax credits for tuition should be introduced.
+D) all of the above
+E) none of the above",B,"Positive statements (fact-based), Normative statements (opinion-based)",
+选择,Which of the following is a normative statement?,"A) The taxes paid by the poor should be reduced in order to improve the income distribution in the U.S.
+B) State governments should not subsidize corporations by training welfare recipients.
+C) Presidential candidates should not be given funds from the federal government to run campaigns.
+D) The sea otter should not be allowed to spread into Southern California coastal waters, because it will reduce the value of fisheries.
+E) all of the above",E,"Normative statements, Policy recommendations",
+选择,Which of the following statements is false? An economic analysis of carbon taxes can:,"A) calculate the increase in costs faced by coal-using industries.
+B) predict the effect on unemployment in West Virginia coal mining communities.
+C) compare the likely reductions in medical expenditures on diseases caused by smog.
+D) present a trade-off of the costs and benefits of different levels of carbon taxes.
+E) conclude that such taxes should be imposed to benefit future generations.",E,"Limits of positive analysis, Normative conclusions require value judgments",
+选择,"Use the following two statements to answer this question:
+I. In order to answer normative questions, it is necessary to make value judgments.
+II. In order to conduct positive economic analysis, it is always necessary to use empirical evidence in addition to economic theories.","A) I and II are incorrect.
+B) I is correct, II is incorrect.
+C) I is incorrect, II is correct.
+D) Both I and II are correct.",B,"Positive vs. normative distinction, Role of empirical evidence",
+选择,"______ questions have to do with explanation and prediction, ______ questions have to do with what ought to be.","A) Positive; negative.
+B) Negative; normative.
+C) Affirmative; positive.
+D) Positive; normative.
+E) Econometric; theoretical.",D,Definitions of positive and normative,
+选择,The key assumption underlying the theory of the firm is that:,"A) firms are assumed to maximize sales revenue.
+B) managers are assumed to maximize the number of employees in their department.
+C) firms are assumed to maximize profits.
+D) none of the above",C,"Profit-maximization assumption, Theory of the firm",
+选择,Which of the following statements is NOT true?,"A) The trade-offs facing consumers and producers are based on prices.
+B) All prices are determined by market interactions between buyers and sellers.
+C) Prices serve an important role in microeconomics.
+D) Only A and B above false.
+E) Only B and C above are false.",B,"Role of prices, Market vs. non-market pricing",
+选择,"Please use the following statements to answer this question:
+
+I. The process of testing and revising theories is central to the development of economics as a science.
+
+II. Theory is imperfect and may not adequately describe economic behavior in some cases.","A) I and II are true.
+B) I is true and II is false.
+C) I is false and II is true.
+D) I and II are false.",A,"Scientific method in economics, Limitations of theoretical models",
+选择,The trade-offs facing consumers include:,"A) how to allocate income across goods and serves.
+B) how to allocate income between consumption and savings.
+C) both A and B
+D) none of the above",C,"Consumer choice, Intertemporal trade-offs",
+选择,The trade-offs facing workers include all of the following EXCEPT:,"A) decision to work or remain outside the workforce.
+B) decision to work or seek additional education.
+C) decision to work for a large corporation or a small firm.
+D) decision to allocate their time between work and leisure.
+E) All of the above are trade-offs facing workers.",E,"Labor supply decisions, Education vs. work choices",
+选择,"Firms face trade-offs in production, including decisions related to:","A) which products to produce.
+B) how much of a particular product to produce.
+C) the best way to produce a given amount of output.
+D) all of the above",D,"Production decisions, Resource allocation by firms",
+选择,"During the presidential campaigns, the candidates from each party typically describe their plans to maintain or change federal taxes on personal and business income. Are these policy statements generally positive or normative?","A) Positive
+B) Normative
+C) Both positive and normative
+D) Neither positive or normative",B,Policy proposals as normative statements,
+选择,Which of the following economic values is NOT an example of a price?,"A) Wage earned per hour
+B) Annual interest rate paid for borrowed money
+C) College tuition per semester
+D) all are examples of prices",D,"Broad concept of price, Prices as opportunity costs",
+选择,Which of the following markets has the most restrictive geographic boundary?,"A) The market for retail gasoline
+B) The market for housing
+C) The market for gold
+D) The market for beef",B,"Market boundaries, Geographic constraints in markets",
+选择,"An investor can acquire shares of stock in Acme Corporation either by purchasing shares on the stock market or by purchasing a bond that is convertible into shares of Acme stock. After careful study, the investor discovers that she can profit by purchasing the bond, converting it to shares of stock, and selling the stock. This practice is called:","A) selling short.
+B) arbitrage.
+C) profiteering.
+D) dumping.
+E) none of the above",B,"Arbitrage, Financial market strategies",
+选择,"Use the following two statements to answer this question:
+
+I. A market is a collection of buyers and sellers that, through actual or potential interactions, determine the price for a product or set of products.
+II. An industry is a collection of markets for similar or closely related products.","A) Both I and II are true.
+B) I is true, and II is false.
+C) I is false, and II is true.
+D) Both I and II are false.",B,"Definition of market, Definition of industry",
+选择,In a perfectly competitive market:,"A) there are a few buyers.
+B) there is a single seller.
+C) there is a cartel.
+D) no single buyer or seller can significantly affect the market price.",D,"Perfect competition, Price-taking behavior",
+选择,Boeing Corporation and Airbus Industries are the only two producers of long-range commercial aircraft. This market is not perfectly competitive because:,"A) each company has annual sales over $10 billion.
+B) each company can significantly affect prices.
+C) Airbus receives subsidies from the European Union.
+D) Airbus cannot sell aircraft to the United States government.
+E) all of the above",B,"Imperfect competition, Market power",
+选择,Which of the following are examples of perfectly competitive markets?,"A) Wheat
+B) Textiles
+C) Gold
+D) The stock market
+E) all of the above",E,"Examples of competitive markets, Commodity markets",
+选择,"Although the U. S. airline industry has only a relatively small number of sellers, the market is nevertheless highly competitive. The reason is that:","A) the number of buyers is very large.
+B) due to fierce competition, no firm has significant control over prices.
+C) due to fierce competition, no firm has significant control over the quantity supplied.
+D) most airline routes are served by relatively many sellers.",B,"Competition among few firms, Price competition",
+选择,"Washington D.C.'s metro train system is being extended further into the neighboring states of Maryland and Virginia, thereby reducing the cost of commuting into the United States' capitol. Other things being held constant, this can be expected to:","A) decrease the extent of the market for housing around Washington D.C.
+B) increase the extent of the market for housing around Washington D.C.
+C) have no effect on the extent of the market for housing around Washington D.C. as the actual geography remains unchanged.
+D) have no effect on the extent of the market for housing around Washington D.C. as the range of houses available has not changed.
+E) have no effect on the extent of the market for housing around Washington D.C. as property taxes have not changed.",B,"Market extent and transportation, Housing markets",
+选择,Why is market definition important for economic decision making?,"A) A firm is interested in knowing its actual and potential competitors.
+B) A firm will define its market in order to maximize revenue.
+C) Government regulators are interested in knowing the effect of mergers and acquisitions on competition and prices in a particular market.
+D) both A and C
+E) both A and B",D,"Market definition, Antitrust policy",
+选择,Which of the following features are relevant for determining the extent of a market?,"A) Its geographical boundaries.
+B) Technological innovations that would reduce the cost of production.
+C) The range of products to be included in it.
+D) both A and B
+E) both A and C",E,"Market boundaries, Product and geographic dimensions",
+选择,Which of the following statements about markets and industries is TRUE?,"A) A market includes buyers but not sellers.
+B) A market includes sellers but not buyers.
+C) An industry includes buyers but not sellers.
+D) An industry includes sellers but not buyers.",D,"Market vs industry, Buyers and sellers",
+选择,"Although there are many reasons why a market can be non-competitive, the principal economic difference between a competitive and a non-competitive market is:","A) the number of firms in the market.
+B) the extent to which any firm can influence the price of the product.
+C) the size of the firms in the market.
+D) the annual sales made by the largest firms in the market.
+E) the presence of government intervention.",B,"Competitive vs non-competitive markets, Price-setting power",
+选择,Which of the following could not possibly be included in the same market as Coke?,"A) Pepsi
+B) Gatorade
+C) Milk
+D) Bread",D,"Product market definition, Substitute goods",
+选择,"Use the following statements to answer this question:
+
+I. Political candidates need to know the geographical extent of the market for TV commercials in determining how to reach the target number of eligible voters with the smallest possible expenditure.
+
+II. The geographical extent of the market for gasoline in Texas will determine whether an oil company drills for oil there.","A) I and II are true.
+B) I is true, and II is false.
+C) I is false, and II is true.
+D) I and II are false.",B,"Market extent and advertising, Resource extraction decisions",
+选择,"Which of the following assertions, if proven true in a court of law, would help Archer-Daniels-Midland, a maker of corn syrup, in its attempt to acquire another corn syrup producer, the Clinton Corn Processing Company?","A) Archer-Daniels-Midland is a dominant producer of corn syrup.
+B) There are no good substitutes for corn syrup for any of its major uses.
+C) Archer-Daniels-Midland and the Clinton Corn Processing Company together hold only a small share of the market for sweeteners including corn syrup and sugar.
+D) Archer-Daniels-Midland produces many other different agricultural products, in addition to corn syrup.",C,"Merger guidelines, Market share and competition",
+选择,"Use the following statements to answer this question:
+
+I. If the extent of a market is broader, it is less likely that firms in the market can influence the market price.
+II. In determining whether two different products belong to the same market, it is necessary to know whether the two products can be used as substitutes for each other.","A) I and II are both false.
+B) I is false, and II is true.
+C) I is true, and II is false.
+D) I and II are both true.",D,"Market breadth and competition, Substitutability",
+选择,"Use the following statements to answer this question:
+
+I. The price for a given product may differ across sellers if the market is not perfectly competitive.
+II. A single ""market price"" does not exist in imperfectly competitive markets.","A) I and II are true.
+B) I is true and II is false.
+C) II is true and I is false.
+D) I and II are false.",B,"Price dispersion, Imperfect competition",
+选择,Suppose you are in charge of product pricing and marketing strategy for a pharmaceutical company. You will have greater ability to independently set prices for your product if:,,,"Price-setting power, Market structure",
+选择,"To arbitrage a price difference between two markets, you should:","A) sell in the low-price market and buy in the high-price market.
+B) buy in the low-price market and sell in the high-price market.
+C) sell in both markets to capture a lower average ""market price.""
+D) none of the above",B,"Arbitrage definition and mechanics, Price convergence",
+选择,Arbitrating price differences between two markets is generally not possible if:,"A) there are positive costs of transporting the products from one market to the other.
+B) the transportation costs are larger than the difference in prices.
+C) the government has prohibited exchange between the two markets.
+D) A and C above
+E) B and C above",E,"Transaction costs and arbitrage limits, Legal barriers to trade",
+选择,Which of the following statement is FALSE?,"A) Perfectly competitive markets are composed of many buyers and sellers.
+B) Some markets may have only a few sellers but exhibit the properties of perfect competition.
+C) A market may be composed of only one buyer and one seller.
+D) All of the above statements are correct.",D,"Perfect competition characteristics, Market structure definitions",
+选择,"From Example 1.2 in the textbook, Pindyck and Rubinfeld distinguish between the mass market and dealer market for bicycles. Although there are many dealers in the U.S. and only a few mass merchandisers, we should expect the dealer market to be somewhat less competitive than the mass market. Why?","A) Due to their differences in quality and performance, dealer bicycles are not close substitutes.
+B) The geographic extent of the market for dealer bicycles is typically small, so the individual sellers do not have many local competitors.
+C) Dealers are small sellers and have little control over bicycle prices.
+D) A and B are correct.
+E) B and C are correct.",D,"Market definition and geographic scope, Product differentiation and competition",
+选择,"Before their merger, XM and Sirius were competing sellers in the U.S. satellite radio market. The U.S. Department of Justice allowed the merger even though it created a single seller in the market. Why might we expect this merger to have limited impact on U.S. consumers?","A) There are many close substitutes for satellite radio service (e.g., free AM-FM radio, internet radio)
+B) The merged firm is likely to act on behalf of its customers and keep its prices and profits low
+C) U.S. consumers are known to have perfectly inelastic demand for satellite radio (i.e., they are unresponsive to price changes)
+D) all of the above are correct.",A,"Merger analysis and market power, Availability of substitutes",
+选择,"Suppose the price of crude oil is $95 per barrel in New York and $85 per barrel in Texas, and the transaction costs for trading between the two markets are $15 per barrel. What actions should you take to arbitrage this price difference?","A) Buy oil in Texas and sell oil in NY
+B) Sell oil in Texas and buy oil in NY
+C) Buy oil in both markets and wait for higher prices
+D) Do not buy or sell oil in either market",D,"Arbitrage profitability condition, Transaction costs vs. price gap",
+选择,A key factor that determines the geographic extent of a housing market is the distance that commuters are willing to travel from home to work. Which of the following events would NOT help to expand the geographic extent of the housing market in a metropolitan area?,"A) Price of gasoline declines
+B) State gasoline tax increases
+C) Public transit fares decrease
+D) none of the above",B,"Geographic market definition, Commuting costs and housing demand",
+选择,"The ""constant dollar"" price is:","A) the real price of a good.
+B) the nominal price of a good adjusted for inflation.
+C) the ""current dollar"" price adjusted for inflation.
+D) all of the above
+E) none of the above",D,"Real vs. nominal prices, Constant dollar definition",
+选择,What does it mean when the CPI is higher this year than last?,"A) The rate of inflation has increased.
+B) There has been inflation since last year.
+C) Real prices have increased.
+D) Real prices have decreased.",B,"CPI interpretation, Inflation measurement",
+选择,The price of a taco was $0.29 in 1970 and $1.09 in 2000. The CPI was 38.8 in 1970 and 172.2 in 2000. The 2000 price of a taco in 1970 dollars is:,"A) $0.25.
+B) $0.29.
+C) $1.09.
+D) $4.84.",B,"Converting nominal prices across years, CPI adjustment formula",
+选择,"Since last year, the price of gold has risen from $1100 to $1420. What annual inflation rate would leave the real price of gold unchanged over the last twelve months?","A) Approximately 29%
+B) 40%
+C) Approximately 71%
+D) 320%
+E) none of the above",A,"Real price constancy condition, Inflation rate calculation",
+选择,"Over the past year price inflation has been 10%, but the price of a used Ford Escort has fallen from $6,000 to $5,000. The real price of a Ford Escort has fallen by:","A) 12%.
+B) 17%.
+C) 20%.
+D) 24%.
+E) 32%.",D,"Real price change calculation, Adjusting for inflation",
+选择,"Suppose the nominal price of gasoline was $0.90 per gallon in 1987. To convert this value to the real price of 1987 gasoline in 2012 dollars, we should:","A) multiply by the 1987 CPI and divide by the 2012 CPI.
+B) multiply by the 2012 CPI and divide by the 1987 CPI.
+C) not do anything because this is the real price in 2012 dollars.
+D) none of the above",B,"Converting past nominal prices to later real dollars, CPI ratio method",
+选择,"The nominal price of industrial red paint was $12 per gallon in 1993. To convert this value to the real price of paint in 2012 dollars, we should use the:","A) Consumer Price Index.
+B) Producer Price Index
+C) Fed funds rate.
+D) 30-day T-bill rate.",B,"Producer Price Index usage, Input cost inflation",
+选择,Which of the following goods is NOT a likely component of the Consumer Price Index?,"A) Hamburger
+B) 87 octane gasoline
+C) Structural steel beams
+D) Movie tickets",C,"CPI market basket composition, Consumer vs. producer goods",
+选择,Which price index published by the US federal government represents wholesale price changes?,"A) Consumer Price Index
+B) Producer Price Index
+C) GDP deflator
+D) Dow-Jones Industrial Average",B,"Producer Price Index definition, Wholesale price measurement",
+选择,"When 1983 is the CPI base year, the CPI value is 82.4 for 1980 and 172.2 for 2000. Suppose we want to convert this CPI series to have a base year of 2000 (that is, CPI2000 = 100). What is the value of the revised CPI for 1980?","A) 172.2
+B) 100
+C) 47.9
+D) 209.0",C,"Rebasing a price index, CPI rescaling formula",
+选择,"Use the following statements to answer this question:
+
+I. The inflation rate (the rate of change in the general price level) calculated from a price index like CPI is the same regardless of the base year we use to form the price index.
+
+II. Although the CPI may indicate the general price level increased by 5% last year, there are some consumer products that may have experienced more or less inflation in the past year.","A) I and II are true.
+B) I is true and II is false.
+C) I is false and II is true.
+D) I and II are false.",A,"Base-year invariance of inflation rate, Heterogeneous price changes",
+选择,Which price index published by the US federal government represents retail price changes?,"A) Consumer Price Index
+B) Producer Price Index
+C) GDP deflator
+D) Dow-Jones Industrial Average",A,"Consumer Price Index definition, Retail price measurement",
+选择,"Suppose the Social Security Administration would like to guarantee the purchasing power of social security payments to the elderly does not diminish. That is, the real value of the payments does not decrease. The CPI in 1990 was 130.7 and the CPI in 1998 was 163.0. How much does the Social Security Administration need to increase payments from 1990 to 1998 to accomplish this objective?",,"The change in the general price level is 100(163 − 130.7)/130.7 = 25%. Thus, the level of payments in 1998 need to be P(1990)*(1 + 0.25).","Indexation of benefits, Maintaining real purchasing power",
+选择,"Suppose the minimum wage was \(0.25 per hour in 1938 and the CPI in that year was 11.5. If the CPI in 1990 was 130.7, what is the real value of the 1938 minimum wage in terms of 1990 dollars? The real value of the 1990 minimum wage in terms of 1990 dollars is \)4.25. Has the real value of the minimum wage declined since 1938?","A. Yes, it has declined.
+B. No, it has increased.
+C. The real value remained the same.
+D. Cannot be determined from the given data.",B,"Real value calculation using CPI, Comparing real wages across years, Inflation adjustment",
+选择,The reward for the capture of Jesse James was \(500.00 in 1881. Suppose the CPI in 1881 was 0.25. What is the real value of the reward in 2010 dollars if the CPI was 218.1 in 2010?,"A. \)436,200
+B. \(54,525
+C. \)1,000
+D. \(109,050",A,"Converting nominal values to real values using CPI, Historical price adjustment",
+选择,"The CPI in 1970 was 38.8 and in 1998 the CPI was 163.0. If the real value of a 1970 gallon of milk in terms of 1998 dollars is \)0.70, what was the nominal price of milk in 1970?","A. \(0.17
+B. \)0.70
+C. \(2.94
+D. \)0.25",A,"Nominal price calculation from real value, CPI adjustment",
+选择,"The nominal price of milk was \(2.25 in 1998 while the CPI was 163.0 that year. Also, the CPI in 1970 was 38.8. What was the real value of 1998 milk in terms of 1970 dollars?","A. \)0.54
+B. \(2.25
+C. \)9.44
+D. \(0.17",A,"Real value calculation using base year CPI, Price comparison across time",
+选择,"The nominal price of a 1990 laptop was \)3,500 and the CPI that year was 130.7. The nominal price of a laptop in 2010 was \(600 and the CPI that year was 218.1. What is the real price of a 2010 laptop in terms of 1990 dollars? By what percent has the real price of laptops changed?","A. \)360; 89.71% decline
+B. \(600; 50% decline
+C. \)1,000; 71% decline
+D. \(360; 10% increase",A,"Real price calculation, Percentage change in real price, Technology cost trends",
+选择,The price to attend a NBA basketball game in Chicago is \)55 while the CPI in Chicago is 153. The CPI in Charlotte is 108 while the price to attend a NBA basketball game is \(52. Which city offers a smaller real cost of attending a NBA basketball game?,"A. Chicago
+B. Charlotte
+C. Both are equal
+D. Cannot be determined",A,"Real cost comparison across locations, Regional CPI differences",
+选择,"Suppose we expect consumer prices to increase by about 30 percent between 2010 and 2020, and the minimum wage was \)7.25 per hour in 2010. What should be the minimum wage in 2020 if it is set to maintain the same purchasing power as in 2010?","A. \(7.25
+B. \)7.55
+C. \(9.42
+D. none of the above.",B,"Maintaining purchasing power, Inflation adjustment of wages",
+选择,"The ""core"" inflation rate is typically defined as the change in consumer prices for all goods included in the CPI basket except energy and food products. Suppose the overall inflation rate based on the CPI was 4 percent for the past year, and energy and food prices did not change during the year. Is the core inflation rate for the past year higher or lower than 4 percent?","A. Higher
+B. Lower
+C. They are the same
+D. We do not have enough information to answer this question.",A,"Core vs. overall inflation, CPI components",
+选择,"We can approximate the real return on an investment by subtracting the inflation rate from the nominal return on the investment. For example, an investment that returns 10% per year while inflation is 4% per year has a real (inflation adjusted) return of approximately 6%. Which of the following outcomes is NOT possible?","A. Nominal and real returns are positive
+B. Nominal return is positive, real return is negative
+C. Nominal return is negative, real return is positive
+D. all of these outcomes are possible",D,"Real vs. nominal returns, Fisher equation approximation",
+选择,Which of the following is NOT an example of ways in which microeconomic analysis can help Toyota Motor Corporation in its corporate decision making?,"A. Forecasting demand for new automobiles
+B. Determining how many automobiles to produce in order to maximize profits
+C. Predicting how competitors will react to the firm's pricing strategy
+D. Forecasting the effect of Toyota's hiring patterns on the U.S. unemployment rate
+E. Forecasting the effect of an oil price increase on demand for hybrid autos",D,"Scope of microeconomics, Firm-level vs. macro-level analysis",
+选择,Which of the following is NOT an example of a way in which microeconomic analysis can help in designing environmental policy?,"A. Determining the optimal level of vehicle fuel efficiency standards
+B. Designing laws to provide incentives for firms to implement clean technologies in new vehicles
+C. Lobbying consumers and firms to reduce consumption of energy
+D. Examining the tradeoffs between ecological benefits of environmental legislation and its impacts on consumers' standard of living",C,"Microeconomics in policy design, Incentives vs. lobbying",
+选择,"To evaluate the potential impact of changes to its SUV business, Ford Motor Company would use:","A. normative economic analysis.
+B. positive economic analysis.
+C. macroeconomic analysis.
+D. consumer sentiment analysis.",A,"Normative vs. positive economics, Corporate decision frameworks",
+选择,Designing laws to provide incentives for firms to implement clean technologies in new vehicles,"A. Designing laws to provide incentives for firms to implement clean technologies in new vehicles
+B. Lobbying consumers and firms to reduce consumption of energy
+C. Examining the tradeoffs between ecological benefits of environmental legislation and its impacts on consumers' standard of living",B,"Environmental policy instruments, Incentive-based regulation, Energy conservation strategies",
+选择,The Clean Air Act is designed to restrict automobile emissions and reduce the external costs of air pollution. The economic analysis used to develop the Clean Air Act was:,"A. normative.
+B. positive.
+C. macroeconomic.
+D. none of the above",A,"Environmental regulation, Externalities, Normative economic analysis",
+选择,"To evaluate the potential impact of introducing the hybrid Prius auto into the U.S. market, Toyota Motor Corporation would use:","A. positive economic analysis.
+B. normative economic analysis.
+C. negative economic analysis.
+D. forensic analysis.",A,"Product launch analysis, Positive economic analysis, Market impact assessment",
+选择,The Corporate Average Fuel Economy (CAFE) standards are designed to improve the average fuel economy of cars and light trucks sold in the U.S. The economic analysis used to develop the CAFE standards was:,"A. macroeconomic.
+B. positive.
+C. normative.
+D. none of the above",C,"CAFE standards, Fuel economy policy, Normative economic analysis",
