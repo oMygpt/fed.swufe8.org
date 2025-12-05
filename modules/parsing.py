@@ -137,13 +137,13 @@ def _normalize_exercises(df: pd.DataFrame) -> Tuple[pd.DataFrame, List[str]]:
 
     out = pd.DataFrame({
         "type": pick("type", "题型"),
-        "stem": pick("stem", "题干", "问题描述", "question"),
+        "stem": pick("stem", "题干", "问题描述", "question", "问题"),
         "options": pick("options", "选项") if options_col is None else options_col,
         "answer": pick("answer", "答案"),
         "knowledge": pick("knowledge", "知识点", "knowledge_points"),
         "analysis": pick("analysis", "解析"),
     })
-    required = ["type", "stem", "answer"]
+    required = ["stem", "answer"]
     for c in required:
         if c not in df.columns:
             warnings.append(f"缺少必填列：{c}")

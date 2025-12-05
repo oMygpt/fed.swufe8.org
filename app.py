@@ -54,7 +54,7 @@ def _suggestions_for_errors(errs: dict, dtype: str) -> list[str]:
     if not tips:
         tips.append("修复所有标红项（Error），并重新上传")
     return tips
-from modules.ui import render_overview, render_tabs, render_history, hide_deploy_button, render_login_branding, style_sidebar_menu, load_custom_css, render_metric_card
+from modules.ui import render_overview, render_tabs, render_history, hide_deploy_button, render_login_branding, style_sidebar_menu, load_custom_css, render_metric_card, render_warnings
 
 st.set_page_config(page_title="应用经济学语料提交平台 By A³ T @2025", layout="wide", menu_items={"Get help": None, "Report a bug": None, "About": None})
 load_custom_css()
@@ -194,8 +194,7 @@ else:
                 raw_path = archive_raw_file(uploaded, user_info["college"])
                 _u_type = "习题库" if upload_type_label in ("本科习题库", "研究生习题库") else upload_type_label
                 meta, df, warnings = parse_uploaded_file(uploaded, _u_type, chosen_ex_type, chosen_level)
-                render_overview(meta, warnings)
-                render_tabs(df, meta, key_prefix=f"upload_preview_{key_suffix}")
+                render_overview(meta)
                 
                 type_mismatch = bool(meta.get("detected_type") and meta.get("type") and meta.get("detected_type") != meta.get("type"))
                 if type_mismatch:
@@ -227,6 +226,9 @@ else:
                                 st.rerun()
                             elif hasattr(st, "experimental_rerun"):
                                 st.experimental_rerun()
+                
+                render_warnings(warnings)
+                render_tabs(df, meta, key_prefix=f"upload_preview_{key_suffix}")
 
         tab1, tab2, tab3 = st.tabs(["问答对", "本科习题库", "研究生习题库"])
         with tab1:

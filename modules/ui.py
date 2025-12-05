@@ -29,7 +29,7 @@ def render_metric_card(label: str, value: str | int | float, delta: str | None =
 
 
 
-def render_overview(meta: dict, warnings: list[str]):
+def render_overview(meta: dict):
     st.success("解析成功！")
     col1, col2, col3 = st.columns(3)
     with col1:
@@ -71,9 +71,14 @@ def render_overview(meta: dict, warnings: list[str]):
             {"类别": "其他问题", "数量": sum(other.values()), "占比(%)": _pct(sum(other.values()))},
         ]
         st.dataframe(pd.DataFrame(rows), use_container_width=True)
+
+
+
+def render_warnings(warnings: list[str]):
     if warnings:
-        for w in warnings:
-            st.warning(w)
+        with st.expander("查看详细解析警告", expanded=False):
+            for w in warnings:
+                st.warning(w)
 
 
 def render_tabs(df: pd.DataFrame, meta: dict | None = None, key_prefix: str = ""):
