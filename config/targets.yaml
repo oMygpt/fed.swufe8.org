@@ -1,3 +1,18 @@
+demo:
+  ex: 40
+  levels:
+    grad:
+      ex: 20
+    ug:
+      ex: 20
+  qa: 0
+  types:
+    判断题: 0
+    填空题: 0
+    案例分析题: 0
+    简答题: 0
+    论述题: 0
+    选择题: 0
 economy:
   ex: 8000
   levels:

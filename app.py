@@ -556,14 +556,7 @@ else:
                     st.rerun()
                 elif hasattr(st, "experimental_rerun"):
                     st.experimental_rerun()
-            if st.button("保存目标设置"):
-                save_targets(code, qa_t, ex_t, types=type_target_vals)
-                st.success("已保存")
-                st.session_state.pop("manage_sel_code", None)
-                if hasattr(st, "rerun"):
-                    st.rerun()
-                elif hasattr(st, "experimental_rerun"):
-                    st.experimental_rerun()
+
             with st.expander("上传记录与预览"):
                 parsed = list_parsed_datasets(code)
                 for item in parsed:

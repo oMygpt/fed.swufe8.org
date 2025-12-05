@@ -68,7 +68,7 @@ def _normalize_type(t: str) -> str:
         return "判断题"
     if "填空" in u:
         return "填空题"
-    if any(k in u for k in ["简答", "论述"]):
+    if any(k in u for k in ["简答", "论述", "分析", "计算"]):
         return "简答题"
     if "案例" in u:
         return "案例分析题"

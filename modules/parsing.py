@@ -223,6 +223,10 @@ def parse_uploaded_file(uploaded_file, upload_type: str, exercise_type: str | No
             if len(counts) > 1:
                 mixed_types = counts
                 warnings_all.append("检测到混合题型：" + ", ".join([f"{k}{v}条" for k, v in counts.items()]))
+            
+            # 若原始文件未提供题型列，且用户选择了自动识别，则应用推断的混合题型
+            if not had_type_col and exercise_type is None:
+                result["type"] = inferred
     # 类型选择一致性提示
     if upload_type and auto_type and upload_type != auto_type:
         warnings_all.append(f"类型选择与系统识别不一致：你选择了{upload_type}，系统识别为{auto_type}")
