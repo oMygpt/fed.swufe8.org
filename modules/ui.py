@@ -85,13 +85,115 @@ def render_tabs(df: pd.DataFrame, meta: dict | None = None, key_prefix: str = ""
     if df is None or df.empty:
         st.info("未识别到有效数据")
         return
-    tab1, tab2, tab3 = st.tabs(["随机抽检（20）", "顺序浏览", "类型抽检"])
+    tab1, tab2, tab3 = st.tabs(["顺序浏览 (预览/导出)", "随机抽检 (20条)", "类型统计"])
+    
+    # --- Tab 1: Sequential Browsing (Main View) ---
     with tab1:
+        # Row 1: Controls for Issues & Export
+        c_issue, c_enc, c_exp = st.columns([1.5, 2, 1.5])
+        with c_issue:
+            only_issues = st.checkbox("**:red[仅显示问题项]**", value=False, key=f"{key_prefix}-only-issues", help="勾选后仅展示存在质量问题的行")
+        with c_enc:
+            enc_opt = st.selectbox(
+                "导出编码", 
+                options=["utf-8-sig", "gbk"], 
+                format_func=lambda x: "UTF-8 (推荐 WPS/通用)" if x == "utf-8-sig" else "GBK (推荐 Excel 直接打开)",
+                key=f"{key_prefix}-enc"
+            )
+        
+        view = df
+        # Pre-filter view based on search (moved to Row 2)
+        
+        # Row 2: Search
+        query = st.text_input("关键词搜索", placeholder="输入关键词或‘答案为空’...", key=f"{key_prefix}-search")
+        
+        # Apply Search Filter
+        if query:
+            if query == "答案为空" and "answer" in df.columns:
+                view = df[df["answer"].astype(str).str.len() == 0]
+            else:
+                view = df[df.astype(str).apply(lambda r: query in "\t".join(r.values), axis=1)]
+        
+        # Apply Issue Filter
+        if only_issues and meta:
+            assessed = assess_qa(view) if meta.get("type") == "问答对" else assess_exercises(view)
+            view = assessed[assessed["quality_flags"].astype(str).str.contains("Error:|Warn:")]
+            
+            # Export Button (In Row 1, Col 3) - requires 'view' to be filtered first
+            with c_exp:
+                if not view.empty:
+                    try:
+                        csv_data = view.to_csv(index=False).encode(enc_opt)
+                        st.download_button(
+                            label="📥 导出报告",
+                            data=csv_data,
+                            file_name=f"issue_report_{meta.get('filename','upload')}_{enc_opt}.csv",
+                            mime="text/csv",
+                            key=f"{key_prefix}-download-issues"
+                        )
+                    except UnicodeEncodeError:
+                         st.error(f"{enc_opt} 编码无法保存某些字符，请尝试 UTF-8")
+
+        # Row 3: Column & Width Control
+        all_cols = list(df.columns)
+        c_width, c_sel = st.columns([1, 4])
+        with c_width:
+             use_width_t1 = st.checkbox("适应宽度", value=False, key=f"{key_prefix}-t1-width")
+        with c_sel:
+             show_cols_t1 = st.multiselect("显示列", all_cols, default=all_cols, key=f"{key_prefix}-t1-cols")
+
+        # Row 4: Pagination & Table
+        page_size = st.slider("每页条数", 10, 100, 20, key=f"{key_prefix}-page_size")
+        page = st.number_input("页码", min_value=1, value=1, key=f"{key_prefix}-page")
+        
+        start = (page - 1) * page_size
+        end = start + page_size
+        view_slice = view.iloc[int(start):int(end)]
+        
+        # Apply Column Filter
+        if show_cols_t1:
+            view_slice = view_slice[show_cols_t1]
+
+        # Render Table
+        if only_issues and meta:
+             # Logic for styling issues (copied/adapted from previous implementation)
+            flags_map = view["quality_flags"].to_dict() # Map index -> flags
+            def _cell_style_safe(row):
+                 flags = str(flags_map.get(row.name, ""))
+                 cols = list(row.index)
+                 red_cols = set()
+                 if meta.get("type") == "问答对":
+                    if "Error:Q_EMPTY" in flags or "Error:Q_GARBLED" in flags: red_cols.add("question")
+                    if "Error:A_EMPTY" in flags or "Error:A_GARBLED" in flags: red_cols.add("answer")
+                 else:
+                    if "Error:STEM_EMPTY" in flags or "Error:STEM_GARBLED" in flags: red_cols.add("stem")
+                    if "Error:OPT_EMPTY" in flags or "Error:OPT_GARBLED" in flags: red_cols.add("options")
+                    if "Error:ANS_EMPTY" in flags or "Error:ANS_GARBLED" in flags or "Error:ANS_NOT_IN_OPTS" in flags or "Error:ANS_INVALID" in flags: red_cols.add("answer")
+                    if "Error:KN_EMPTY" in flags or "Error:KN_GARBLED" in flags: red_cols.add("knowledge")
+                 return ["background-color: #fdecea" if c in red_cols else "" for c in cols]
+
+            st.dataframe(view_slice.style.apply(_cell_style_safe, axis=1), use_container_width=use_width_t1)
+        else:
+            st.dataframe(view_slice, use_container_width=use_width_t1)
+
+    # --- Tab 2: Random Inspection ---
+    with tab2:
+        cols = list(df.columns)
+        toggle_col, sel_col = st.columns([1, 4])
+        with toggle_col:
+             use_width = st.checkbox("适应宽度", value=False, key=f"{key_prefix}-t2-width")
+        with sel_col:
+             show_cols = st.multiselect("显示列", cols, default=cols, key=f"{key_prefix}-t2-cols")
+        
         n = min(20, len(df))
-        assessed = assess_qa(df.sample(n)) if meta and meta.get("type") == "问答对" else assess_exercises(df.sample(n))
+        sample_df = df.sample(n)
+        view_df = sample_df[show_cols] if show_cols else sample_df 
+        
+        assessed = assess_qa(sample_df) if meta and meta.get("type") == "问答对" else assess_exercises(sample_df)
+        
         def _cell_style(row):
             flags = str(row.get("quality_flags", ""))
-            cols = list(assessed.columns)
+            cols_to_style = list(view_df.columns) 
             red_cols = set()
             if meta and meta.get("type") == "问答对":
                 if "Error:Q_EMPTY" in flags or "Error:Q_GARBLED" in flags: red_cols.add("question")
@@ -101,40 +203,10 @@ def render_tabs(df: pd.DataFrame, meta: dict | None = None, key_prefix: str = ""
                 if "Error:OPT_EMPTY" in flags or "Error:OPT_GARBLED" in flags: red_cols.add("options")
                 if "Error:ANS_EMPTY" in flags or "Error:ANS_GARBLED" in flags or "Error:ANS_NOT_IN_OPTS" in flags or "Error:ANS_INVALID" in flags: red_cols.add("answer")
                 if "Error:KN_EMPTY" in flags or "Error:KN_GARBLED" in flags: red_cols.add("knowledge")
-            return ["background-color: #fdecea" if c in red_cols else "" for c in cols]
-        st.dataframe(assessed.style.apply(_cell_style, axis=1), use_container_width=True)
-    with tab2:
-        query = st.text_input("关键词搜索（如：答案为空）", key=f"{key_prefix}-search")
-        only_issues = st.checkbox("仅显示问题项", value=False, key=f"{key_prefix}-only-issues")
-        page_size = st.slider("每页条数", 10, 100, 20, key=f"{key_prefix}-page_size")
-        page = st.number_input("页码", min_value=1, value=1, key=f"{key_prefix}-page")
-        view = df
-        if query:
-            if query == "答案为空" and "answer" in df.columns:
-                view = df[df["answer"].astype(str).str.len() == 0]
-            else:
-                view = df[df.astype(str).apply(lambda r: query in "\t".join(r.values), axis=1)]
-        if only_issues and meta:
-            assessed = assess_qa(view) if meta.get("type") == "问答对" else assess_exercises(view)
-            view = assessed[assessed["quality_flags"].astype(str).str.contains("Error:|Warn:")]
-        start = (page - 1) * page_size
-        if only_issues and meta:
-            def _cell_style2(row):
-                flags = str(row.get("quality_flags", ""))
-                cols = list(view.columns)
-                red_cols = set()
-                if meta.get("type") == "问答对":
-                    if "Error:Q_EMPTY" in flags or "Error:Q_GARBLED" in flags: red_cols.add("question")
-                    if "Error:A_EMPTY" in flags or "Error:A_GARBLED" in flags: red_cols.add("answer")
-                else:
-                    if "Error:STEM_EMPTY" in flags or "Error:STEM_GARBLED" in flags: red_cols.add("stem")
-                    if "Error:OPT_EMPTY" in flags or "Error:OPT_GARBLED" in flags: red_cols.add("options")
-                    if "Error:ANS_EMPTY" in flags or "Error:ANS_GARBLED" in flags or "Error:ANS_NOT_IN_OPTS" in flags or "Error:ANS_INVALID" in flags: red_cols.add("answer")
-                    if "Error:KN_EMPTY" in flags or "Error:KN_GARBLED" in flags: red_cols.add("knowledge")
-                return ["background-color: #fdecea" if c in red_cols else "" for c in cols]
-            st.dataframe(view.iloc[int(start):int(start+page_size)].style.apply(_cell_style2, axis=1), use_container_width=True)
-        else:
-            st.dataframe(view.iloc[int(start):int(start+page_size)], use_container_width=True)
+            return ["background-color: #fdecea" if c in red_cols else "" for c in cols_to_style]
+        
+        final_view = assessed[show_cols]
+        st.dataframe(final_view.style.apply(_cell_style, axis=1), use_container_width=use_width)
     with tab3:
         t = None
         if meta:

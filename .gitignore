@@ -1,0 +1,20 @@
+# User Data & Storage
+storage/
+storage_logins/
+
+# Output Reports
+*.csv
+
+# Data Files
+*.xlsx
+*.xls
+
+# Databases
+*.db
+*.sqlite
+*.sqlite3
+
+# OS & Python
+.DS_Store
+__pycache__/
+*.pyc

@@ -6,7 +6,7 @@ import bcrypt
 from pathlib import Path
 import streamlit.components.v1 as components
 from modules.auth import get_authenticator, get_user_info
-from modules.parsing import parse_uploaded_file
+from modules.parsing import parse_uploaded_file, split_dataset_by_type
 from modules.storage import (
     archive_raw_file,
     save_parsed_dataset,
@@ -208,8 +208,19 @@ else:
                     with c1:
                         if err_ratio <= QUALITY_ERROR_RATIO_THRESHOLD:
                             if st.button("入库", type="primary", key=f"btn_save_{key_suffix}"):
-                                save_parsed_dataset(df, meta, user_info["college"])
-                                st.session_state["last_import_info"] = {"type": meta.get('type','-'), "count": len(df), "force": False}
+                                split_results = split_dataset_by_type(df, meta)
+                                total_saved = 0
+                                types_saved = set()
+                                for m, d in split_results:
+                                    save_parsed_dataset(d, m, user_info["college"])
+                                    total_saved += len(d)
+                                    types_saved.add(m.get('type', '-'))
+                                
+                                st.session_state["last_import_info"] = {
+                                    "type": "/".join(types_saved) if types_saved else meta.get('type','-'), 
+                                    "count": total_saved, 
+                                    "force": False
+                                }
                                 st.session_state[f"upload_nonce_{key_suffix}"] = nonce + 1
                                 if hasattr(st, "rerun"):
                                     st.rerun()
@@ -219,8 +230,19 @@ else:
                             st.error(f"质量错误占比 {round(err_ratio*100,2)}% 超过阈值，建议修复后再入库")
                     with c2:
                         if st.button("强制入库（忽略质量检测）", key=f"btn_force_{key_suffix}"):
-                            save_parsed_dataset(df, meta, user_info["college"])
-                            st.session_state["last_import_info"] = {"type": meta.get('type','-'), "count": len(df), "force": True}
+                            split_results = split_dataset_by_type(df, meta)
+                            total_saved = 0
+                            types_saved = set()
+                            for m, d in split_results:
+                                save_parsed_dataset(d, m, user_info["college"])
+                                total_saved += len(d)
+                                types_saved.add(m.get('type', '-'))
+
+                            st.session_state["last_import_info"] = {
+                                "type": "/".join(types_saved) if types_saved else meta.get('type','-'), 
+                                "count": total_saved, 
+                                "force": True
+                            }
                             st.session_state[f"upload_nonce_{key_suffix}"] = nonce + 1
                             if hasattr(st, "rerun"):
                                 st.rerun()
@@ -302,7 +324,7 @@ else:
                         type_name = "问答对" if is_parsed_qa else "习题库"
                     with st.expander(f"{item['date']} - {name} · 类型：{type_name} · 条目：{len(df)}"):
                         meta = {"type": type_name, "filename": item["file"], "total": len(df)}
-                        render_overview(meta, [])
+                        render_overview(meta)
                         render_tabs(df, meta, key_prefix=f"history-{item['path']}")
                         if st.button("删除", key=f"user-del-{item['path']}"):
                             if delete_path(item["path"]):
@@ -615,7 +637,8 @@ else:
                 uploaded = st.file_uploader("上传样例文件", type=["xlsx", "xls", "csv"], key="test_uploader")
                 if uploaded is not None:
                     meta, df, warnings = parse_uploaded_file(uploaded, upload_type, chosen_ex_type)
-                    render_overview(meta, warnings)
+                    render_overview(meta)
+                    render_warnings(warnings)
                     render_tabs(df, meta, key_prefix="test_sample")
                     ok = True
                     if upload_type == "问答对":
@@ -635,7 +658,8 @@ else:
                 if uploaded is not None:
                     raw_path = archive_raw_file(uploaded, user_info["college"]) 
                     meta, df, warnings = parse_uploaded_file(uploaded, upload_type, chosen_ex_type)
-                    render_overview(meta, warnings)
+                    render_overview(meta)
+                    render_warnings(warnings)
                     render_tabs(df, meta, key_prefix="admin_upload_preview")
                     save_parsed_dataset(df, meta, user_info["college"]) 
             with tab_history:
@@ -661,7 +685,7 @@ else:
                             type_name = "问答对" if is_parsed_qa else "习题库"
                             with st.expander(f"{item['date']} - {item['file']} · 类型：{type_name} · 条目：{len(df)}"):
                                 meta = {"type": type_name, "filename": item["file"], "total": len(df)}
-                                render_overview(meta, [])
+                                render_overview(meta)
                                 render_tabs(df, meta, key_prefix=f"test_history-{item['path']}")
                         else:
                             with st.expander(f"{item['date']} - {item['file']} · 原始文件"):
@@ -691,7 +715,7 @@ else:
                             type_name = "问答对" if is_parsed_qa else "习题库"
                             with st.expander(f"{item['date']} - {item['file']} · 类型：{type_name} · 条目：{len(df)}"):
                                 meta = {"type": type_name, "filename": item["file"], "total": len(df)}
-                                render_overview(meta, [])
+                                render_overview(meta)
                                 render_tabs(df, meta, key_prefix=f"test_history_test-{item['path']}")
                         else:
                             with st.expander(f"{item['date']} - {item['file']} · 原始文件"):
@@ -708,7 +732,8 @@ else:
             uploaded = st.file_uploader("上传样例文件", type=["xlsx", "xls", "csv"], key="test_uploader")
             if uploaded is not None:
                 meta, df, warnings = parse_uploaded_file(uploaded, upload_type, chosen_ex_type)
-                render_overview(meta, warnings)
+                render_overview(meta)
+                render_warnings(warnings)
                 render_tabs(df, meta, key_prefix="test_sample_non_admin")
                 ok = True
                 if upload_type == "问答对":

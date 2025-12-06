@@ -1,251 +1,390 @@
 import pandas as pd
 from io import BytesIO, StringIO
-from typing import Tuple, List, Dict
+from typing import Tuple, List, Dict, Optional, Any
+import re
 from modules.quality import assess_qa, assess_exercises, summarize_quality, _parse_options_text, _normalize_type
 
-KEYWORDS_SHEET = ["选择", "填空", "问答", "判断", "简答", "案例"]
+KEYWORDS_SHEET = ["选择", "填空", "问答", "判断", "简答", "案例", "论述", "习题", "计算", "名词解释"]
 
+# Semantic Mapping Configuration
+COLUMN_MAPPINGS = {
+    "stem": ["stem", "题干", "问题", "题目", "question", "description", "问题描述", "题面", "题目内容", "正面"],
+    "answer": ["answer", "答案", "正确答案", "reference_answer", "ans", "标准答案", "背面"],
+    "options": ["options", "选项", "choices", "备选答案", "选项内容"],
+    "analysis": ["analysis", "解析", "答案解析", "explanation", "详解", "题目解析", "分析"],
+    "knowledge": ["knowledge", "知识点", "point", "考点", "关联知识点", "相关知识点"],
+    "type": ["type", "题型", "question_type", "category", "题目类型"],
+    "level": ["level", "难度", "difficulty", "grade", "学历", "适用层次"],
+    "serial_no": ["serial_no", "序号", "id", "number", "no"]
+}
 
-def _read_file(uploaded_file):
+def _match_columns(df: pd.DataFrame) -> Dict[str, str]:
+    """
+    Map standard semantic fields to actual DataFrame columns.
+    Returns a dictionary: { standard_field: actual_column_name }
+    """
+    matched = {}
+    cols = list(df.columns)
+    cols_lower = {str(c).strip().lower(): str(c) for c in cols}
+    
+    # 1. Exact match (case-insensitive) on aliases
+    for field, aliases in COLUMN_MAPPINGS.items():
+        for alias in aliases:
+            if alias.lower() in cols_lower:
+                matched[field] = cols_lower[alias.lower()]
+                break
+    
+    # 2. Fuzzy match specifically for stem if not found
+    # If "stem" is not found, look for columns containing "题目" or "问题" but not "类型"/"解析"
+    if "stem" not in matched:
+        for c in cols:
+            c_str = str(c).strip()
+            # Avoid matching "题目类型", "问题解析" etc.
+            if ("题目" in c_str or "问题" in c_str) and ("类型" not in c_str and "解析" not in c_str and "选项" not in c_str):
+                 matched["stem"] = c_str
+                 break
+    
+    return matched
+
+def _read_file(uploaded_file) -> Dict[str, pd.DataFrame]:
     name = uploaded_file.name.lower()
     if name.endswith((".xlsx", ".xls")):
-        xls = pd.read_excel(uploaded_file, sheet_name=None, dtype=str)
-        return xls
+        # Read all sheets as string to preserve data fidelity initially
+        try:
+            xls = pd.read_excel(uploaded_file, sheet_name=None, dtype=str)
+            return xls
+        except Exception as e:
+            raise ValueError(f"Excel read error: {str(e)}")
     elif name.endswith(".csv"):
-        # 尝试 UTF-8，失败则回退 GB18030
         try:
             data = uploaded_file.getvalue() if hasattr(uploaded_file, "getvalue") else uploaded_file.read()
+            # Try to detect encoding
+            encoding = "utf-8"
             try:
                 text = data.decode("utf-8")
             except UnicodeDecodeError:
-                text = data.decode("gb18030")
-            df = pd.read_csv(StringIO(text))
+                text = data.decode("gb18030", errors="replace")
+                encoding = "gb18030"
+            
+            # Robust CSV reading
+            # 1. Try standard read
+            try:
+                df = pd.read_csv(StringIO(text), dtype=str)
+                # Heuristic: if all data is in one column, maybe delimiter issue
+                if len(df.columns) == 1 and "," in text:
+                     pass
+            except:
+                 # Fallback
+                 df = pd.read_csv(StringIO(text), sep=None, engine='python', dtype=str)
+            
+            # Trim column names
+            df.columns = df.columns.astype(str).str.strip()
             return {"CSV": df}
         except Exception as e:
-            raise e
+            raise ValueError(f"CSV read error: {str(e)}")
     else:
-        raise ValueError("不支持的文件类型")
+        raise ValueError("不支持的文件类型 (仅支持 .xlsx, .xls, .csv)")
 
 
-def _detect_type_from_sheet_names(sheets: Dict[str, pd.DataFrame]) -> str:
-    for s in sheets.keys():
-        for kw in KEYWORDS_SHEET:
-            if kw in s:
-                # 简单规则：含“问答”→QA，否则为习题库
-                if "问答" in s:
-                    return "问答对"
-                return "习题库"
-    # 默认：依赖列名判断
-    for df in sheets.values():
-        cols = set([c.strip() for c in df.columns.astype(str)])
-        cols_lower = {c.lower() for c in cols}
-        # 若存在选项相关列，优先判定为习题库
-        option_cols = {"options", "选项", "a", "b", "c", "d", "e", "选项a", "选项b", "选项c", "选项d"}
-        if cols_lower & option_cols:
-            return "习题库"
-        if "题型" in cols or "type" in cols:
-            return "习题库"
-        if {"question", "answer"}.issubset(cols_lower):
-            return "问答对"
-    return "习题库"
+def _detect_type_from_sheet_name(sheet_name: str) -> str | None:
+    """Detect specific exercise subtype from sheet name."""
+    s = sheet_name.strip()
+    if any(k in s for k in ["选择", "单选", "多选", "单项", "多项"]): return "选择题"
+    if "填空" in s: return "填空题"
+    if "判断" in s: return "判断题"
+    if "简答" in s: return "简答题"
+    if "论述" in s: return "论述题"
+    if "案例" in s: return "案例分析题"
+    if "计算" in s: return "简答题" # Map Calculation to Short Answer as it's not a standalone standard type
+    if "名词" in s: return "简答题" # Map Definition to Short Answer
+    if "问答" in s: return "问答对"
+    return None
 
-def _detect_exercise_subtype(sheet_names: List[str], df: pd.DataFrame) -> str:
-    names = " ".join(sheet_names)
-    if any(k in names for k in ["选择"]):
-        return "选择题"
-    if any(k in names for k in ["填空"]):
-        return "填空题"
-    if any(k in names for k in ["判断"]):
-        return "判断题"
-    if any(k in names for k in ["简答"]):
-        return "简答题"
-    if any(k in names for k in ["论述"]):
-        return "论述题"
-    if any(k in names for k in ["案例"]):
-        return "案例分析题"
-    cols_lower = {c.lower() for c in df.columns}
-    if "options" in cols_lower or "选项" in cols_lower:
-        colname = "options" if "options" in df.columns else ("选项" if "选项" in df.columns else None)
-        if colname is not None:
-            series = df[colname]
-            series = series.fillna("").astype(str).str.strip()
-            if series.str.len().gt(0).any():
-                return "选择题"
-    ans = df.get("answer") if "answer" in df.columns else (df.get("答案") if "答案" in df.columns else None)
-    if ans is not None:
-        vals = set(str(x).strip().lower() for x in ans.dropna().tolist())
-        judge_set = {"true", "false", "t", "f", "是", "否", "对", "错"}
-        if vals and vals.issubset(judge_set):
-            return "判断题"
-        if all(len(str(x)) <= 12 for x in ans.dropna().tolist()):
-            return "填空题"
-        return "简答题"
-    return "简答题"
-
-def _detect_exercise_level(sheet_names: List[str], df: pd.DataFrame) -> str:
-    names = " ".join(sheet_names)
-    grad_keys = ["研究生", "硕士", "graduate", "postgraduate"]
-    ug_keys = ["本科", "undergraduate"]
+def _detect_exercise_level_from_sheet(sheet_names: List[str]) -> str:
+    names = " ".join(sheet_names).lower()
+    grad_keys = ["研究生", "硕士", "graduate", "postgraduate", "硕博"]
+    ug_keys = ["本科", "undergraduate", "大专"]
     if any(k in names for k in grad_keys):
         return "研究生"
     if any(k in names for k in ug_keys):
         return "本科"
     return "本科"
 
+def _clean_answer_string(val, type_context: str | None = None) -> str:
+    """Clean the answer string. Handle 'A: Description' for choice questions."""
+    s = str(val).strip()
+    if s.lower() == "nan" or s == "": return ""
+    
+    # 1. Remove generic prefixes like "答案", "Answer:"
+    # Use NON-GREEDY match for the prefix part
+    s = re.sub(r"^(答案|Answer|Correct Answer)[:：\s\t]*", "", s, flags=re.IGNORECASE).strip()
+    
+    # 2. Logic for Choice Questions (Selection)
+    # If type is Selection, we want to extract just the option letter if standard format
+    is_selection = type_context == "选择题"
+    
+    if is_selection:
+        # Patter: Starts with Single Letter (A-F), followed by dot/colon/space?
+        # Check if it looks like "A: xxx" or "A. xxx" or "A xxx"
+        match = re.match(r"^([A-F])\s*[:\.]\s*(.*)$", s, re.IGNORECASE)
+        if match:
+             # It matches "A: content". Return just "A" as standard answer for system?
+             # OR should we keep it? 
+             # PRD Requirement check: Usually answer for choice is just "A".
+             # If the user put "A: Description", usually "A" is the key.
+             return match.group(1).upper()
+        
+        # Also check pure letter
+        if re.match(r"^[A-F]$", s, re.IGNORECASE):
+            return s.upper()
+
+    return s
 
 def _normalize_qa(df: pd.DataFrame) -> Tuple[pd.DataFrame, List[str]]:
     warnings = []
-    aliases_q = ["question", "问题", "问", "Q"]
-    aliases_a = ["answer", "答案", "答", "A"]
-    cols_lower = {c.lower(): c for c in df.columns}
-    q_col = next((cols_lower.get(a.lower()) for a in aliases_q if a.lower() in cols_lower), None)
-    a_col = next((cols_lower.get(a.lower()) for a in aliases_a if a.lower() in cols_lower), None)
+    mapping = _match_columns(df)
+    
+    q_col = mapping.get("stem") # Re-use stem mapping as question
+    if not q_col:
+        # Fallback to pure question aliases if stem didn't catch it correctly or for clarity
+         if "question" in df.columns.str.lower(): q_col = df.columns[list(df.columns.str.lower()).index("question")]
+    
+    # Specific QA check
+    if not q_col:
+        # Check specific Q aliases
+        q_aliases = ["question", "问题", "问", "Q"]
+        cols_lower = {str(c).lower(): c for c in df.columns}
+        for a in q_aliases:
+            if a.lower() in cols_lower:
+                q_col = cols_lower[a.lower()]
+                break
+                
+    a_col = mapping.get("answer")
+    
     if not q_col or not a_col:
-        warnings.append("缺少必填列：question/answer")
+        warnings.append(f"缺少必填列：Question/Answer (Found: Q={q_col}, A={a_col})")
         return pd.DataFrame(), warnings
+
     out = pd.DataFrame({
         "question": df[q_col],
         "answer": df[a_col],
     })
-    # 删除缺失任一必填列的行
     out = out.dropna(subset=["question", "answer"], how="any")
     return out, warnings
 
-
-def _normalize_exercises(df: pd.DataFrame) -> Tuple[pd.DataFrame, List[str]]:
+def _normalize_exercises(df: pd.DataFrame, default_type_from_sheet: Optional[str] = None) -> Tuple[pd.DataFrame, List[str]]:
     warnings = []
-    def pick(*names):
-        for n in names:
-            if n in df.columns:
-                return df[n]
-        return pd.Series(dtype=str)
-    # 处理分散选项列合并为标准 options
-    option_candidates = [c for c in df.columns if c.strip().lower() in ["a", "b", "c", "d", "e"] or c.startswith("选项")]
-    options_col = None
-    if option_candidates and "options" not in df.columns and "选项" not in df.columns:
-        def join_options(row):
-            parts = []
-            for c in option_candidates:
-                val = str(row.get(c, "")).strip()
-                if val:
-                    label = c.strip().upper()
-                    if label.startswith("选项") and len(label) > 2:
-                        label = label[-1]
-                    parts.append(f"{label}: {val}")
-            return "\n".join(parts)
-        options_col = df.apply(join_options, axis=1)
+    mapping = _match_columns(df)
+    
+    # 1. Handle Options: Separate columns (A, B, C...) vs Single Column
+    options_col_source = mapping.get("options")
+    final_options_col = None
+    
+    # If no single options column mapped, look for spreading columns (A, B, C, D...)
+    if not options_col_source:
+        option_candidates = [c for c in df.columns if str(c).strip().lower() in ["a", "b", "c", "d", "e", "f"] or str(c).strip().startswith("选项")]
+        if option_candidates:
+            def join_options(row):
+                parts = []
+                for c in sorted(option_candidates): # sort to keep A,B,C order
+                    val = str(row.get(c, "")).strip()
+                    if val and val.lower() != "nan":
+                        label = str(c).strip()
+                        # Clean label "选项A" -> "A"
+                        if label.startswith("选项") and len(label) > 2:
+                            label = label.replace("选项", "").strip()
+                        # If label is just A, B, C.. use it
+                        parts.append(f"{label}: {val}")
+                return "\n".join(parts)
+            final_options_col = df.apply(join_options, axis=1)
+    else:
+        final_options_col = df[options_col_source]
 
-    out = pd.DataFrame({
-        "type": pick("type", "题型"),
-        "stem": pick("stem", "题干", "问题描述", "question", "问题"),
-        "options": pick("options", "选项") if options_col is None else options_col,
-        "answer": pick("answer", "答案"),
-        "knowledge": pick("knowledge", "知识点", "knowledge_points"),
-        "analysis": pick("analysis", "解析"),
-    })
+    # 2. Build Result DataFrame
+    out = pd.DataFrame()
+    
+    # Mapping helper
+    def get_col(field):
+        return df[mapping[field]] if field in mapping else pd.Series(dtype=str)
+
+    out["type"] = get_col("type")
+    # Preserve original serial number if exists
+    if "serial_no" in mapping:
+        out["serial_no"] = df[mapping["serial_no"]]
+        
+    out["stem"] = get_col("stem")
+    out["options"] = final_options_col if final_options_col is not None else pd.Series(dtype=str)
+    out["answer"] = get_col("answer")
+    out["knowledge"] = get_col("knowledge")
+    out["analysis"] = get_col("analysis")
+    out["level"] = get_col("level") 
+    
+    # 3. Type Filling Strategy (Early)
+    # Priority: 1. Row-level type column 2. Sheet-level deduction 3. Row-level inference
+    
+    # If type column is empty or missing, fill with detected sheet type
+    if "type" not in mapping or out["type"].isna().all() or (out["type"].astype(str).str.strip() == "").all():
+        if default_type_from_sheet:
+            out["type"] = default_type_from_sheet
+
+    # 4. Clean Answer
+    if not out["answer"].empty:
+        # Use vectorized apply with type context if possible, or straight map if type is uniform
+        # Since type might vary per row (rarely if sheet-based), we do row-wise
+        def clean_wrapper(row):
+            t = str(row.get("type", "")).strip()
+            return _clean_answer_string(row.get("answer", ""), type_context=t)
+        
+        out["answer"] = out.apply(clean_wrapper, axis=1)
+
+    # 5. Mandatory Checks
     required = ["stem", "answer"]
     for c in required:
-        if c not in df.columns:
-            warnings.append(f"缺少必填列：{c}")
-        elif out[c].empty or (out[c].astype(str).str.len() == 0).all():
-            warnings.append(f"缺少必填列：{c}")
-    # 若缺失 type 但存在选项列，默认设置为 选择
-    if ("type" not in df.columns or out["type"].astype(str).str.len().eq(0).all()) and (options_col is not None or "options" in df.columns or "选项" in df.columns):
-        out["type"] = "选择"
-    out = out.dropna(how="all")
+        if c not in mapping: # Check if source was found
+             warnings.append(f"未找到列：{c}")
+        elif out[c].isna().all() or (out[c].astype(str).str.strip() == "").all():
+             warnings.append(f"列内容为空：{c}")
+             
+    # Remove empty rows
+    # Only drop if stem is empty
+    out = out[out["stem"].notna() & (out["stem"].astype(str).str.strip() != "")]
+    
     return out, warnings
-
 
 def parse_uploaded_file(uploaded_file, upload_type: str, exercise_type: str | None = None, exercise_level: str | None = None):
     sheets = _read_file(uploaded_file)
-    auto_type = _detect_type_from_sheet_names(sheets)
-    final_type = upload_type or auto_type
+    
+    # Global Level Detection (default for file)
+    global_detected_level = _detect_exercise_level_from_sheet(list(sheets.keys())) if not exercise_level else exercise_level
 
     normalized_frames = []
     warnings_all: List[str] = []
-    sheet_names = []
-    had_type_col = False
+    sheet_names = list(sheets.keys())
+    
+    is_qa_mode = (upload_type == "问答对")
+    
     for name, df in sheets.items():
-        sheet_names.append(name)
-        if final_type == "问答对":
+        if df.empty:
+            continue
+            
+        sheet_detected_type = _detect_type_from_sheet_name(name)
+        
+        # If user explicitly selected "问答对" mode, treat all as QA
+        if is_qa_mode:
             nf, w = _normalize_qa(df)
-        else:
-            nf, w = _normalize_exercises(df)
-        if "type" in df.columns:
-            had_type_col = True
-        warnings_all.extend([f"[{name}] {x}" for x in w])
+            if not nf.empty:
+                normalized_frames.append(nf)
+            warnings_all.extend([f"[{name}] {x}" for x in w])
+            continue
+            
+        effective_sheet_type = exercise_type or sheet_detected_type
+        
+        nf, w = _normalize_exercises(df, default_type_from_sheet=effective_sheet_type)
         if not nf.empty:
+            # Apply level if missing
+            if "level" not in nf.columns or nf["level"].isna().all():
+                nf["level"] = global_detected_level
+            
             normalized_frames.append(nf)
+        warnings_all.extend([f"[{name}] {x}" for x in w])
+
     if normalized_frames:
         result = pd.concat(normalized_frames, ignore_index=True)
     else:
         result = pd.DataFrame()
 
-    columns = list(result.columns) if not result.empty else []
-    exercise_subtype = None
+    # Final cleanup and type inference for rows that still lack type
     mixed_types = None
-    level = None
-    detected_level = None
-    if final_type == "习题库":
-        exercise_subtype = exercise_type or _detect_exercise_subtype(sheet_names, result) if not result.empty else (exercise_type or "选择题")
-        if exercise_type is not None:
-            result["type"] = exercise_type
-        elif "type" not in result.columns or result["type"].fillna("").astype(str).str.strip().str.len().eq(0).all():
-            result["type"] = exercise_subtype
-        # 级别识别
-        # 若调用方指定了级别（如“研究生习题库”），则不进行自动识别，直接使用指定级别
-        if exercise_level:
-            detected_level = None
-            level = exercise_level
-        else:
-            detected_level = _detect_exercise_level(sheet_names, result)
-            level = detected_level or "本科"
-        # 检测混合题型：当原始文件未提供题型列或类型疑似不可靠时，基于行级特征推断
-        mixed_types = None
-        if not result.empty:
-            def infer_row_type(row):
-                t = _normalize_type(row.get("type", ""))
-                # 若原始文件没有题型列，则忽略自动填充，改用特征推断
-                if not had_type_col or not t:
-                    opts = _parse_options_text(row.get("options"))
-                    ans = str(row.get("answer", "")).strip()
-                    judge = {"true", "false", "t", "f", "是", "否", "对", "错"}
-                    if opts:
-                        return "选择题"
-                    if ans and ans.strip().lower() in judge:
-                        return "判断题"
-                    if len(ans) <= 12:
-                        return "填空题"
-                    return "简答题"
-                return t
-            inferred = result.apply(infer_row_type, axis=1)
-            counts = inferred.value_counts().to_dict()
-            if len(counts) > 1:
-                mixed_types = counts
-                warnings_all.append("检测到混合题型：" + ", ".join([f"{k}{v}条" for k, v in counts.items()]))
+    if not result.empty and is_qa_mode is False:
+        
+        def infer_row_type(row):
+            t = str(row.get("type", "")).strip()
+            if t and t.lower() != "nan" and t != "": return _normalize_type(t)
             
-            # 若原始文件未提供题型列，且用户选择了自动识别，则应用推断的混合题型
-            if not had_type_col and exercise_type is None:
-                result["type"] = inferred
-    # 类型选择一致性提示
-    if upload_type and auto_type and upload_type != auto_type:
-        warnings_all.append(f"类型选择与系统识别不一致：你选择了{upload_type}，系统识别为{auto_type}")
-    # 质量检测（仅用于页面展示，不写入 CSV）
+            # Content-based inference
+            opts = str(row.get("options", "")).strip()
+            ans = str(row.get("answer", "")).strip().lower()
+            
+            if opts and opts.lower() != "nan" and opts != "": return "选择题"
+            
+            judge_keys = {"true", "false", "t", "f", "是", "否", "对", "错"}
+            if ans in judge_keys: return "判断题"
+            
+            if len(ans) <= 12 and len(ans) > 0: return "填空题"
+            return "简答题" 
+            
+        # Only apply inference where type is missing
+        # NOTE: if we filled it from sheet, it is likely filled. 
+        # But we run this to normalize the string (e.g. "Selection" -> "选择题")
+        result["type"] = result.apply(infer_row_type, axis=1)
+        
+        # Stats for mixed types
+        counts = result["type"].value_counts().to_dict()
+        if len(counts) > 1:
+            mixed_types = counts
+            warnings_all.append("检测到混合题型/Multi-type detected: " + ", ".join([f"{k}:{v}" for k,v in counts.items()]))
+
+    columns = list(result.columns) if not result.empty else []
+    
     quality_summary = None
     if not result.empty:
-        assessed = assess_qa(result) if final_type == "问答对" else assess_exercises(result)
+        assessed = assess_qa(result) if is_qa_mode else assess_exercises(result)
         quality_summary = summarize_quality(assessed)
+        result = assessed # Update result to include quality columns
+
     meta = {
         "filename": uploaded_file.name,
         "sheets": sheet_names,
         "columns": columns,
         "total": len(result),
-        "type": final_type,
-        "detected_type": auto_type,
-        "exercise_type": exercise_subtype,
-        "level": level,
-        "detected_level": detected_level,
+        "type": "问答对" if is_qa_mode else "习题库",
+        "detected_type": "问答对" if is_qa_mode else "习题库",
+        "exercise_type": exercise_type,
+        "level": global_detected_level,
+        "detected_level": global_detected_level,
         "quality_summary": quality_summary,
         "mixed_types": mixed_types,
     }
+    
     return meta, result, warnings_all
+
+def split_dataset_by_type(df: pd.DataFrame, meta: dict) -> List[Tuple[dict, pd.DataFrame]]:
+    """
+    Split a parsed DataFrame into multiple DataFrames based on the 'type' column.
+    Returns a list of (metadata, dataframe) tuples.
+    """
+    if df.empty or "type" not in df.columns:
+        return [(meta, df)]
+    
+    unique_types = df["type"].unique()
+    if len(unique_types) <= 1:
+        return [(meta, df)]
+        
+    results = []
+    base_filename = meta.get("filename", "upload")
+    for t in unique_types:
+        sub_df = df[df["type"] == t].copy()
+        if sub_df.empty:
+            continue
+            
+        # Create new metadata for this slice
+        new_meta = meta.copy()
+        # Append type to filename for clarity
+        name_part = str(t).replace("题", "")
+        if name_part not in base_filename:
+             new_meta["filename"] = f"{base_filename.rsplit('.', 1)[0]}_{name_part}.csv" # Simplified naming
+        else:
+             new_meta["filename"] = base_filename
+             
+        new_meta["type"] = "习题库" # Default content type
+        new_meta["detected_type"] = "习题库" 
+        new_meta["total"] = len(sub_df)
+        
+        # Re-assess quality for this slice specifically
+        if "quality_score" in sub_df.columns:
+             # Just summarize existing scores
+             new_meta["quality_summary"] = summarize_quality(sub_df)
+        
+        results.append((new_meta, sub_df))
+        
+    return results
